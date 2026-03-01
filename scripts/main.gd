@@ -3,6 +3,9 @@ extends Node2D
 var enemy_scene: PackedScene = preload("res://scenes/enemy.tscn")
 var xp_gem_scene: PackedScene = preload("res://scenes/xp_gem.tscn")
 
+@export var character_data: CharacterData
+@export var level_data: LevelData
+
 @onready var player: CharacterBody2D = $Player
 @onready var enemies_container: Node2D = $EnemiesContainer
 @onready var projectiles_container: Node2D = $ProjectilesContainer
@@ -16,22 +19,25 @@ var spawn_timer: float = 0.0
 var is_game_over: bool = false
 
 func _ready() -> void:
+	if character_data == null:
+		character_data = load("res://data/characters/default.tres")
+	if level_data == null:
+		level_data = load("res://data/levels/default.tres")
 	player.projectiles_container = projectiles_container
+	player.apply_character_data(character_data)
 	player.died.connect(_on_player_died)
 	player.level_up.connect(_on_level_up)
 	weapon_select_ui.weapon_chosen.connect(_on_weapon_chosen)
 	_setup_weapons()
 
 func _setup_weapons() -> void:
-	var proj_weapon := ProjectileWeapon.new()
-	var aura_weapon := AuraWeapon.new()
-	var thunder := ThunderStrike.new()
-	var fan := KnifeFan.new()
-	player.add_weapon(proj_weapon)
-	player.add_weapon(aura_weapon)
-	player.add_weapon(thunder)
-	player.add_weapon(fan)
-	proj_weapon.upgrade()
+	for entry in character_data.starting_weapons:
+		var weapon := WeaponRegistry.create_weapon(entry.weapon_id)
+		if weapon == null:
+			continue
+		player.add_weapon(weapon)
+		for i in entry.starting_level:
+			weapon.upgrade()
 
 func _process(delta: float) -> void:
 	if is_game_over:
@@ -39,9 +45,12 @@ func _process(delta: float) -> void:
 	time_elapsed += delta
 	camera.global_position = player.global_position
 	spawn_timer -= delta
-	var spawn_interval := maxf(1.5 - (time_elapsed / 30.0) * 0.1, 0.3)
+	var spawn_interval := maxf(
+		level_data.initial_spawn_interval - (time_elapsed / 30.0) * level_data.interval_decay_per_30s,
+		level_data.min_spawn_interval
+	)
 	if spawn_timer <= 0.0:
-		var count := 1 + int(time_elapsed / 30.0)
+		var count := level_data.spawn_count_base + int(time_elapsed / 30.0) * level_data.spawn_count_per_30s
 		for i in count:
 			_spawn_enemy()
 		spawn_timer = spawn_interval
@@ -49,33 +58,31 @@ func _process(delta: float) -> void:
 
 func _spawn_enemy() -> void:
 	var angle := randf() * TAU
-	var dist := randf_range(400.0, 600.0)
+	var dist := randf_range(level_data.spawn_distance_min, level_data.spawn_distance_max)
 	var enemy := enemy_scene.instantiate() as Enemy
 	enemies_container.add_child(enemy)
 	enemy.global_position = player.global_position + Vector2(cos(angle), sin(angle)) * dist
-	enemy.speed = 80.0 + time_elapsed * 0.5
 	enemy.setup(player)
-	enemy.setup_type(_pick_enemy_type(), time_elapsed)
+	enemy.apply_enemy_data(_pick_enemy_data(), time_elapsed)
 	enemy.died_at.connect(_on_enemy_died_at)
 
-func _pick_enemy_type() -> Enemy.Type:
-	if time_elapsed < 30.0:
-		return Enemy.Type.NORMAL
-	var r := randf()
-	if time_elapsed < 90.0:
-		return Enemy.Type.SPEEDER if r < 0.35 else Enemy.Type.NORMAL
-	elif time_elapsed < 180.0:
-		if r < 0.45:
-			return Enemy.Type.NORMAL
-		elif r < 0.80:
-			return Enemy.Type.SPEEDER
-		return Enemy.Type.BRUTE
-	else:
-		if r < 0.30:
-			return Enemy.Type.NORMAL
-		elif r < 0.60:
-			return Enemy.Type.SPEEDER
-		return Enemy.Type.BRUTE
+func _pick_enemy_data() -> EnemyData:
+	for i in range(level_data.waves.size() - 1, -1, -1):
+		var wave: EnemySpawnWave = level_data.waves[i]
+		if time_elapsed >= wave.start_time and time_elapsed < wave.end_time:
+			return _weighted_pick(wave.spawn_entries)
+	return load("res://data/enemies/normal.tres")
+
+func _weighted_pick(entries: Array) -> EnemyData:
+	var total := 0.0
+	for e in entries:
+		total += e.weight
+	var r := randf() * total
+	for e in entries:
+		r -= e.weight
+		if r <= 0.0:
+			return e.enemy_data
+	return entries[-1].enemy_data
 
 func _on_enemy_died_at(pos: Vector2, xp_value: int) -> void:
 	var gem: Area2D = xp_gem_scene.instantiate()

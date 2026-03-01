@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "brute"
+base_speed = 45.0
+speed_time_scale = 0.2
+health = 200.0
+damage = 25.0
+xp_value = 30
+contact_dist = 50.0
+modulate_color = Color(0.8, 0.15, 0.15, 1)
+sprite_scale = Vector2(0.7, 0.7)
+collision_scale = Vector2(1.75, 1.75)

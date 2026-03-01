@@ -68,5 +68,5 @@ func _pulse() -> void:
 	for e in get_tree().get_nodes_in_group("enemies"):
 		if not is_instance_valid(e):
 			continue
-		if _player.global_position.distance_to(e.global_position) <= radius:
+		if _player.global_position.distance_squared_to(e.global_position) <= radius * radius:
 			e.take_damage(damage)
