@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3 uid="uid://hudscn001"]
+
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Panel" type="Panel" parent="."]
+offset_right = 340.0
+offset_bottom = 70.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 332.0
+offset_bottom = 62.0
+
+[node name="HealthBar" type="ProgressBar" parent="Panel/VBox"]
+custom_minimum_size = Vector2(320, 18)
+max_value = 100.0
+value = 100.0
+
+[node name="XPBar" type="ProgressBar" parent="Panel/VBox"]
+custom_minimum_size = Vector2(320, 12)
+max_value = 100.0
+value = 0.0
+modulate = Color(0, 1, 0.2, 1)
+
+[node name="InfoRow" type="HBoxContainer" parent="Panel/VBox"]
+
+[node name="LevelLabel" type="Label" parent="Panel/VBox/InfoRow"]
+text = "LVL 1"
+
+[node name="TimeLabel" type="Label" parent="Panel/VBox/InfoRow"]
+text = "00:00"
+
+[node name="GameOverPanel" type="Panel" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = 100.0
+
+[node name="VBox" type="VBoxContainer" parent="GameOverPanel"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 300.0
+offset_bottom = 200.0
+
+[node name="ResultLabel" type="Label" parent="GameOverPanel/VBox"]
+text = "GAME OVER"
+horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="GameOverPanel/VBox"]
+text = "Restart"

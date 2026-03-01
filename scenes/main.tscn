@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://mainscn001"]
+
+[ext_resource type="Script" uid="uid://djum1ftpx2te7" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" uid="uid://playerscn001" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://hudscn001" path="res://scenes/hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" uid="uid://b85pkdcc5yrds" path="res://scenes/weapon_select_ui.tscn" id="4_wsui"]
+
+[node name="Main" type="Node2D" unique_id=470192113]
+script = ExtResource("1_main")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=457697178]
+
+[node name="EnemiesContainer" type="Node2D" parent="." unique_id=1441897717]
+
+[node name="ProjectilesContainer" type="Node2D" parent="." unique_id=1515706238]
+
+[node name="GemsContainer" type="Node2D" parent="." unique_id=2109481285]
+
+[node name="Player" parent="." unique_id=1787665012 instance=ExtResource("2_player")]
+
+[node name="HUD" parent="." unique_id=799876236 instance=ExtResource("3_hud")]
+
+[node name="WeaponSelectUI" parent="." unique_id=469686387 instance=ExtResource("4_wsui")]
