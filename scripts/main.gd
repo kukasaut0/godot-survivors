@@ -25,8 +25,12 @@ func _ready() -> void:
 func _setup_weapons() -> void:
 	var proj_weapon := ProjectileWeapon.new()
 	var aura_weapon := AuraWeapon.new()
+	var thunder := ThunderStrike.new()
+	var fan := KnifeFan.new()
 	player.add_weapon(proj_weapon)
 	player.add_weapon(aura_weapon)
+	player.add_weapon(thunder)
+	player.add_weapon(fan)
 	proj_weapon.upgrade()
 
 func _process(delta: float) -> void:
@@ -46,12 +50,32 @@ func _process(delta: float) -> void:
 func _spawn_enemy() -> void:
 	var angle := randf() * TAU
 	var dist := randf_range(400.0, 600.0)
-	var enemy: CharacterBody2D = enemy_scene.instantiate()
+	var enemy := enemy_scene.instantiate() as Enemy
 	enemies_container.add_child(enemy)
 	enemy.global_position = player.global_position + Vector2(cos(angle), sin(angle)) * dist
 	enemy.speed = 80.0 + time_elapsed * 0.5
 	enemy.setup(player)
+	enemy.setup_type(_pick_enemy_type(), time_elapsed)
 	enemy.died_at.connect(_on_enemy_died_at)
+
+func _pick_enemy_type() -> Enemy.Type:
+	if time_elapsed < 30.0:
+		return Enemy.Type.NORMAL
+	var r := randf()
+	if time_elapsed < 90.0:
+		return Enemy.Type.SPEEDER if r < 0.35 else Enemy.Type.NORMAL
+	elif time_elapsed < 180.0:
+		if r < 0.45:
+			return Enemy.Type.NORMAL
+		elif r < 0.80:
+			return Enemy.Type.SPEEDER
+		return Enemy.Type.BRUTE
+	else:
+		if r < 0.30:
+			return Enemy.Type.NORMAL
+		elif r < 0.60:
+			return Enemy.Type.SPEEDER
+		return Enemy.Type.BRUTE
 
 func _on_enemy_died_at(pos: Vector2, xp_value: int) -> void:
 	var gem: Area2D = xp_gem_scene.instantiate()
