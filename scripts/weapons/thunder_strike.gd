@@ -1,21 +1,21 @@
 extends WeaponBase
 class_name ThunderStrike
 
-var damage: float = 30.0
+var damage: float = 36.0
 var target_count: int = 1
 var strike_interval: float = 3.0
 var _timer: float = 0.0
 var _lightning_targets: Array[Vector2] = []
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Zaps the nearest enemy (dmg 30, 3s)",
+	"Zaps the nearest enemy (dmg 36, 3s)",
 	"Targets: 2",
-	"Damage 50, interval 2.5s",
+	"Damage 60, interval 2.5s",
 	"Targets: 3",
-	"Damage 70, interval 2s",
+	"Damage 84, interval 2s",
 	"Targets: 4",
-	"Damage 100, interval 1.5s",
-	"Max: 5 targets, dmg 120, 1s",
+	"Damage 120, interval 1.5s",
+	"Max: 5 targets, dmg 144, 1s",
 ]
 
 func _on_setup() -> void:
@@ -25,27 +25,27 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		1:
-			damage = 30.0
+			damage = 36.0
 			target_count = 1
 			strike_interval = 3.0
 		2:
 			target_count = 2
 		3:
-			damage = 50.0
+			damage = 60.0
 			strike_interval = 2.5
 		4:
 			target_count = 3
 		5:
-			damage = 70.0
+			damage = 84.0
 			strike_interval = 2.0
 		6:
 			target_count = 4
 		7:
-			damage = 100.0
+			damage = 120.0
 			strike_interval = 1.5
 		8:
 			target_count = 5
-			damage = 120.0
+			damage = 144.0
 			strike_interval = 1.0
 
 func get_next_upgrade_description() -> String:

@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1")
 id = "brute"
-base_speed = 45.0
-speed_time_scale = 0.2
-health = 200.0
+base_speed = 65.0
+speed_time_scale = 0.08
+health = 120.0
 damage = 25.0
 xp_value = 30
 contact_dist = 50.0

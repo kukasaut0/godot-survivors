@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name VoidOrb
 
-var bolt_damage: float = 25.0
+var bolt_damage: float = 30.0
 var bolt_count: int = 4
 var bolt_cooldown: float = 0.4
 var aura_damage: float = 15.0
@@ -14,34 +14,35 @@ var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
 	"EVOLUTION: 4 bolts + damage aura (combined Magic Bolt + Holy Onion)",
-	"Power: Bolt dmg 35, Aura dmg 22",
+	"Power: Bolt dmg 42, Aura dmg 26",
 	"Range: Aura radius 260, Bolt count 6",
-	"Max Power: Bolt dmg 50, Aura dmg 30, tick 0.3s",
+	"Max Power: Bolt dmg 60, Aura dmg 36, tick 0.3s",
 ]
 
 func _on_setup() -> void:
 	weapon_name = "Void Orb"
 	weapon_description = "Fires orbiting bolts and pulses a void aura."
+	max_level = 4
 	_projectile_scene = load("res://scenes/projectile.tscn")
 
 func _on_upgrade() -> void:
 	match level:
 		1:
-			bolt_damage = 25.0
+			bolt_damage = 30.0
 			bolt_count = 4
 			bolt_cooldown = 0.4
-			aura_damage = 15.0
+			aura_damage = 18.0
 			aura_radius = 200.0
 			aura_tick = 0.4
 		2:
-			bolt_damage = 35.0
-			aura_damage = 22.0
+			bolt_damage = 42.0
+			aura_damage = 26.4
 		3:
 			aura_radius = 260.0
 			bolt_count = 6
 		4:
-			bolt_damage = 50.0
-			aura_damage = 30.0
+			bolt_damage = 60.0
+			aura_damage = 36.0
 			aura_tick = 0.3
 	queue_redraw()
 

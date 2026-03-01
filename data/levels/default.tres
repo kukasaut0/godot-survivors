@@ -58,17 +58,17 @@ spawn_entries = Array[Resource]([SubResource("e3_normal"), SubResource("e3_speed
 [sub_resource type="Resource" id="e4_normal"]
 script = ExtResource("3")
 enemy_data = ExtResource("4")
-weight = 0.3
+weight = 0.4
 
 [sub_resource type="Resource" id="e4_speeder"]
 script = ExtResource("3")
 enemy_data = ExtResource("5")
-weight = 0.3
+weight = 0.35
 
 [sub_resource type="Resource" id="e4_brute"]
 script = ExtResource("3")
 enemy_data = ExtResource("6")
-weight = 0.4
+weight = 0.25
 
 [sub_resource type="Resource" id="wave4"]
 script = ExtResource("2")
@@ -85,6 +85,7 @@ min_spawn_interval = 0.3
 interval_decay_per_30s = 0.1
 spawn_count_base = 1
 spawn_count_per_30s = 1
+max_spawn_count = 4
 spawn_distance_min = 400.0
 spawn_distance_max = 600.0
 waves = Array[Resource]([SubResource("wave1"), SubResource("wave2"), SubResource("wave3"), SubResource("wave4")])

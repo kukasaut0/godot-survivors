@@ -8,6 +8,7 @@ class_name LevelData
 @export var interval_decay_per_30s: float = 0.1
 @export var spawn_count_base: int = 1
 @export var spawn_count_per_30s: int = 1
+@export var max_spawn_count: int = 5
 @export var spawn_distance_min: float = 400.0
 @export var spawn_distance_max: float = 600.0
 @export var waves: Array[EnemySpawnWave] = []

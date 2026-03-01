@@ -1,14 +1,14 @@
 extends WeaponBase
 class_name ProjectileWeapon
 
-var damage: float = 15.0
+var damage: float = 18.0
 var shoot_cooldown: float = 0.8
 var projectile_count: int = 1
 var _shoot_timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Base shot (damage 15, cooldown 0.8s)",
+	"Base shot (damage 18, cooldown 0.8s)",
 	"Faster: Cooldown ×0.8",
 	"Spread: 2 bolts",
 	"Power: Damage ×1.3",
@@ -26,7 +26,7 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		1:
-			damage = 15.0
+			damage = 18.0
 			shoot_cooldown = 0.8
 			projectile_count = 1
 		2:
@@ -56,35 +56,25 @@ func _physics_process(delta: float) -> void:
 		return
 	_shoot_timer -= delta
 	if _shoot_timer <= 0.0:
-		var nearest := _find_nearest_enemy()
-		if nearest:
+		var targets := _find_nearest_enemies(projectile_count)
+		if targets.size() > 0:
 			_shoot_timer = shoot_cooldown
-			_fire_at(nearest)
+			_fire_at(targets)
 
-func _find_nearest_enemy() -> Node2D:
-	var nearest: Node2D = null
-	var nearest_dist := INF
-	for e in get_tree().get_nodes_in_group("enemies"):
-		if not is_instance_valid(e):
-			continue
-		var d := _player.global_position.distance_to(e.global_position)
-		if d < nearest_dist:
-			nearest_dist = d
-			nearest = e
-	return nearest
+func _find_nearest_enemies(count: int) -> Array:
+	var enemies := get_tree().get_nodes_in_group("enemies")
+	enemies = enemies.filter(func(e): return is_instance_valid(e))
+	enemies.sort_custom(func(a, b):
+		return _player.global_position.distance_squared_to(a.global_position) \
+			 < _player.global_position.distance_squared_to(b.global_position))
+	return enemies.slice(0, count)
 
-func _fire_at(target: Node2D) -> void:
+func _fire_at(targets: Array) -> void:
 	if _projectile_scene == null or _projectiles_container == null:
 		return
-	var base_dir := (target.global_position - _player.global_position).normalized()
-	if projectile_count == 1:
-		_spawn_projectile(base_dir)
-	else:
-		var spread := deg_to_rad(20.0)
-		for i in projectile_count:
-			var t := float(i) / float(projectile_count - 1)
-			var angle: float = lerp(-spread, spread, t)
-			_spawn_projectile(base_dir.rotated(angle))
+	for target in targets:
+		var dir: Vector2 = ((target as Node2D).global_position - _player.global_position).normalized()
+		_spawn_projectile(dir)
 
 func _spawn_projectile(direction: Vector2) -> void:
 	var proj: Area2D = _projectile_scene.instantiate()

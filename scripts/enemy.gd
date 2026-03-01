@@ -4,6 +4,8 @@ class_name Enemy
 signal died_at(pos: Vector2, xp_value: int)
 signal damage_taken(amount: float)
 
+static var _enemy_count: int = 0
+
 var speed: float = 80.0
 var health: float = 30.0
 var damage: float = 10.0
@@ -11,6 +13,7 @@ var xp_value: int = 10
 var contact_dist: float = 30.0
 var _player: Node2D = null
 var _damage_timer: float = 0.0
+var _flash_timer: float = 0.0
 var _reposition_threshold_sq: float = 0.0
 var _normal_modulate: Color = Color(1, 0.5, 0.2)
 var _sep_cache: Vector2 = Vector2.ZERO
@@ -19,14 +22,19 @@ var _sep_frame: int = 0
 const DAMAGE_COOLDOWN: float = 1.0
 const SEP_RADIUS: float = 60.0
 const SEP_WEIGHT: float = 0.6
-const SEP_INTERVAL: int = 3
+const SEP_INTERVAL: int = 8
+const SEP_MAX_COUNT: int = 80
 
 func _ready() -> void:
+	_enemy_count += 1
 	add_to_group("enemies")
 	var vp_size := get_viewport().get_visible_rect().size
 	var threshold: float = vp_size.length() * 0.8
 	_reposition_threshold_sq = threshold * threshold
 	_sep_frame = randi() % SEP_INTERVAL
+
+func _exit_tree() -> void:
+	_enemy_count -= 1
 
 func setup(player_ref: Node2D) -> void:
 	_player = player_ref
@@ -50,6 +58,8 @@ func make_elite() -> void:
 	$CollisionShape2D.scale *= 1.2
 
 func _compute_separation() -> Vector2:
+	if _enemy_count > SEP_MAX_COUNT:
+		return Vector2.ZERO
 	var sep := Vector2.ZERO
 	for neighbor in get_tree().get_nodes_in_group("enemies"):
 		if neighbor == self or not is_instance_valid(neighbor):
@@ -67,6 +77,10 @@ func _apply_visuals(color: Color, sprite_scale: Vector2, collision_scale: Vector
 	$CollisionShape2D.scale = collision_scale
 
 func _physics_process(delta: float) -> void:
+	if _flash_timer > 0.0:
+		_flash_timer -= delta
+		if _flash_timer <= 0.0:
+			$Sprite2D.modulate = _normal_modulate
 	if _player == null or not is_instance_valid(_player):
 		return
 	_sep_frame = (_sep_frame + 1) % SEP_INTERVAL
@@ -96,6 +110,4 @@ func take_damage(amount: float) -> void:
 		died_at.emit(global_position, xp_value)
 		queue_free()
 	else:
-		get_tree().create_timer(0.1).timeout.connect(
-			func() -> void: if is_instance_valid(self): $Sprite2D.modulate = _normal_modulate
-		)
+		_flash_timer = 0.1

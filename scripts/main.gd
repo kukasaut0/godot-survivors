@@ -25,6 +25,7 @@ var total_damage_dealt: float = 0.0
 
 var _shake_timer: float = 0.0
 var _shake_intensity: float = 0.0
+var _hud_timer: float = 0.0
 
 var _boss_spawn_times: Array[float] = [300.0, 600.0, 900.0]
 var _boss_data: EnemyData = null
@@ -95,13 +96,16 @@ func _process(delta: float) -> void:
 		level_data.min_spawn_interval
 	)
 	if spawn_timer <= 0.0:
-		var count := level_data.spawn_count_base + int(time_elapsed / 30.0) * level_data.spawn_count_per_30s
+		var count := mini(level_data.spawn_count_base + int(time_elapsed / 30.0) * level_data.spawn_count_per_30s, level_data.max_spawn_count)
 		for i in count:
 			if enemies_container.get_child_count() < max_enemies:
 				_spawn_enemy()
 		spawn_timer = spawn_interval
 
-	hud.update_hud(player, time_elapsed, total_kills)
+	_hud_timer -= delta
+	if _hud_timer <= 0.0:
+		_hud_timer = 0.1
+		hud.update_hud(player, time_elapsed, total_kills)
 
 func trigger_screen_shake(intensity: float, duration: float) -> void:
 	_shake_intensity = intensity
@@ -177,19 +181,26 @@ func _check_persistent_unlocks() -> void:
 		GameState.set_unlock("char_tank_hero", true)
 
 func _on_level_up(_lvl: int) -> void:
-	var options: Array = []
+	var owned: Array = []
+	var new_pool: Array = []
 	for w in player.weapons:
 		if w.can_upgrade():
-			options.append(w)
+			(owned if w.level >= 1 else new_pool).append(w)
 	for p in player.passives:
 		if p.can_upgrade():
-			options.append(p)
-	var evolutions := _check_evolutions()
-	options.append_array(evolutions)
-	if options.is_empty():
+			(owned if p.level >= 1 else new_pool).append(p)
+	owned.append_array(_check_evolutions())
+	if owned.is_empty() and new_pool.is_empty():
 		return
+	owned.shuffle()
+	new_pool.shuffle()
+	var options: Array = []
+	if not owned.is_empty():
+		options.append(owned.pop_back())
+	var rest := owned + new_pool
+	rest.shuffle()
+	options.append_array(rest.slice(0, mini(2, rest.size())))
 	options.shuffle()
-	options = options.slice(0, mini(3, options.size()))
 	get_tree().paused = true
 	weapon_select_ui.show_options(options)
 
