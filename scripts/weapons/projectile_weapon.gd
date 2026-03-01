@@ -88,7 +88,8 @@ func _fire_at(target: Node2D) -> void:
 
 func _spawn_projectile(direction: Vector2) -> void:
 	var proj: Area2D = _projectile_scene.instantiate()
-	proj.damage = damage
+	var dmg_mult: float = _player.damage_multiplier if "damage_multiplier" in _player else 1.0
+	proj.damage = damage * dmg_mult
 	proj.direction = direction
 	proj.global_position = _player.global_position
 	_projectiles_container.add_child(proj)

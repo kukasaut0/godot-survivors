@@ -65,8 +65,9 @@ func _physics_process(delta: float) -> void:
 		_pulse()
 
 func _pulse() -> void:
+	var dmg_mult: float = _player.damage_multiplier if "damage_multiplier" in _player else 1.0
 	for e in get_tree().get_nodes_in_group("enemies"):
 		if not is_instance_valid(e):
 			continue
 		if _player.global_position.distance_squared_to(e.global_position) <= radius * radius:
-			e.take_damage(damage)
+			e.take_damage(damage * dmg_mult)

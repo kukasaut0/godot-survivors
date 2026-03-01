@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://hlthpickup01"]
+
+[ext_resource type="Script" path="res://scripts/health_pickup.gd" id="1_hp"]
+[ext_resource type="Texture2D" uid="uid://bqews3qerucqo" path="res://icon.svg" id="2_tex"]
+
+[node name="HealthPickup" type="Area2D"]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_hp")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+modulate = Color(1, 0.2, 0.4, 1)
+scale = Vector2(0.12, 0.12)

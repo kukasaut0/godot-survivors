@@ -14,6 +14,16 @@ var xp_to_next: int = 100
 
 var projectiles_container: Node = null
 var weapons: Array[WeaponBase] = []
+var passives: Array = []
+var boost_velocity: Vector2 = Vector2.ZERO
+
+var damage_multiplier: float = 1.0
+var cooldown_multiplier: float = 1.0
+var xp_multiplier: float = 1.0
+var xp_collect_radius: float = 60.0
+var xp_magnet_radius: float = 200.0
+
+var _main_node: Node = null
 
 func apply_character_data(data: CharacterData) -> void:
 	speed = data.speed
@@ -28,22 +38,32 @@ func add_weapon(w: WeaponBase) -> void:
 	add_child(w)
 	w.setup(self, projectiles_container)
 
+func add_passive(item: PassiveItem) -> void:
+	passives.append(item)
+	add_child(item)
+	item.setup_passive(self)
+
 func _physics_process(_delta: float) -> void:
-	var dir := Vector2(
-		Input.get_axis("ui_left", "ui_right"),
-		Input.get_axis("ui_up", "ui_down")
-	)
-	velocity = dir.normalized() * speed if dir.length() > 0 else Vector2.ZERO
+	if boost_velocity.length() > 0:
+		velocity = boost_velocity
+	else:
+		var dir := Vector2(
+			Input.get_axis("ui_left", "ui_right"),
+			Input.get_axis("ui_up", "ui_down")
+		)
+		velocity = dir.normalized() * speed if dir.length() > 0 else Vector2.ZERO
 	move_and_slide()
 
 func take_damage(amount: float) -> void:
 	health = clampf(health - amount, 0.0, max_health)
+	if _main_node != null:
+		_main_node.trigger_screen_shake(8.0, 0.2)
 	if health <= 0.0:
 		died.emit()
 		set_physics_process(false)
 
 func collect_xp(amount: int) -> void:
-	xp += amount
+	xp += int(ceil(float(amount) * xp_multiplier))
 	if xp >= xp_to_next:
 		xp -= xp_to_next
 		_level_up()

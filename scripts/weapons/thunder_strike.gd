@@ -68,6 +68,7 @@ func _physics_process(delta: float) -> void:
 		_strike()
 
 func _strike() -> void:
+	var dmg_mult: float = _player.damage_multiplier if "damage_multiplier" in _player else 1.0
 	var candidates: Array[Enemy] = []
 	for e in get_tree().get_nodes_in_group("enemies"):
 		var enemy := e as Enemy
@@ -79,7 +80,7 @@ func _strike() -> void:
 		return da < db)
 	_lightning_targets.clear()
 	for i in mini(target_count, candidates.size()):
-		candidates[i].take_damage(damage)
+		candidates[i].take_damage(damage * dmg_mult)
 		_lightning_targets.append(to_local(candidates[i].global_position))
 	if not _lightning_targets.is_empty():
 		queue_redraw()

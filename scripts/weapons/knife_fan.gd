@@ -62,10 +62,11 @@ func _physics_process(delta: float) -> void:
 func _fire_burst() -> void:
 	if _projectile_scene == null or _projectiles_container == null:
 		return
+	var dmg_mult: float = _player.damage_multiplier if "damage_multiplier" in _player else 1.0
 	for i in projectile_count:
 		var angle: float = (TAU / float(projectile_count)) * float(i)
 		var proj: Area2D = _projectile_scene.instantiate()
-		proj.damage = damage
+		proj.damage = damage * dmg_mult
 		proj.direction = Vector2(cos(angle), sin(angle))
 		proj.global_position = _player.global_position
 		_projectiles_container.add_child(proj)
