@@ -1,18 +1,22 @@
 extends Node
 
 var selected_character_data: CharacterData = null
+var selected_level_data: LevelData = null
 
 const SAVE_PATH := "user://unlocks.cfg"
 var _config := ConfigFile.new()
 
-const UPGRADE_IDS: Array[String] = ["vital_core", "quick_feet", "power_core", "accelerator", "scholar"]
-const UPGRADE_MAX_TIER: int = 3
+const UPGRADE_IDS: Array[String] = ["vital_core", "quick_feet", "power_core", "accelerator", "scholar", "lucky", "armor", "revival"]
+const UPGRADE_MAX_TIER: int = 5
 const UPGRADE_COSTS: Dictionary = {
-	"vital_core":  [50, 100, 200],
-	"quick_feet":  [50, 100, 200],
-	"power_core":  [75, 150, 300],
-	"accelerator": [75, 150, 300],
-	"scholar":     [50, 100, 200],
+	"vital_core":  [50, 100, 200, 400, 800],
+	"quick_feet":  [50, 100, 200, 400, 800],
+	"power_core":  [75, 150, 300, 600, 1200],
+	"accelerator": [75, 150, 300, 600, 1200],
+	"scholar":     [50, 100, 200, 400, 800],
+	"lucky":       [50, 100, 200, 400, 800],
+	"armor":       [75, 150, 300, 600, 1200],
+	"revival":     [100, 200, 400, 800, 1500],
 }
 const UPGRADE_NAMES: Dictionary = {
 	"vital_core":  "Vital Core",
@@ -20,6 +24,9 @@ const UPGRADE_NAMES: Dictionary = {
 	"power_core":  "Power Core",
 	"accelerator": "Accelerator",
 	"scholar":     "Scholar",
+	"lucky":       "Lucky Charm",
+	"armor":       "Iron Skin",
+	"revival":     "Second Wind",
 }
 const UPGRADE_DESCS: Dictionary = {
 	"vital_core":  "+10% Max HP per tier",
@@ -27,6 +34,9 @@ const UPGRADE_DESCS: Dictionary = {
 	"power_core":  "+5% Damage per tier",
 	"accelerator": "-5% Cooldowns per tier",
 	"scholar":     "+10% XP Gain per tier",
+	"lucky":       "+3% Health Drop Chance per tier",
+	"armor":       "-5% Damage Taken per tier",
+	"revival":     "Revive once per run (30-75% HP)",
 }
 
 func _ready() -> void:

@@ -5,16 +5,16 @@
 
 [sub_resource type="Resource" id="w1"]
 script = ExtResource("2")
-weapon_id = "knife_fan"
+weapon_id = "thunder_strike"
 starting_level = 1
 
 [resource]
 script = ExtResource("1")
-id = "speeder_hero"
-display_name = "Speedster"
-speed = 500.0
-max_health = 60.0
-health_per_level = 10.0
-modulate_color = Color(0.2, 1, 0.5, 1)
-sprite_scale = Vector2(0.4, 0.4)
+id = "mage"
+display_name = "Mage"
+speed = 250.0
+max_health = 80.0
+health_per_level = 15.0
+modulate_color = Color(0.5, 0.3, 1, 1)
+sprite_scale = Vector2(0.5, 0.5)
 starting_weapons = Array[Resource]([SubResource("w1")])

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "swarm"
+base_speed = 200.0
+speed_time_scale = 0.15
+health = 8.0
+damage = 3.0
+xp_value = 2
+contact_dist = 20.0
+modulate_color = Color(0.3, 1, 0.3, 1)
+sprite_scale = Vector2(0.15, 0.15)
+collision_scale = Vector2(0.4, 0.4)
+phase_through = false
+charges = false

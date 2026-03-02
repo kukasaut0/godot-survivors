@@ -50,11 +50,28 @@ func test_take_damage_clamped_at_zero() -> void:
 	assert_approx_eq(p.health, 0.0, 0.001, "health must not go below zero")
 	p.queue_free()
 
-func test_take_damage_clamped_at_max_health() -> void:
+func test_take_damage_minimum_one() -> void:
+	# With armor=0 and damage_reduction=0, negative damage results in minimum 1.0
 	var p = _make_player()
-	# Negative damage (would be healing); clamp keeps health <= max
 	p.take_damage(-50.0)
-	assert_approx_eq(p.health, 100.0, 0.001, "health must not exceed max_health")
+	# maxf(-50 * 1.0 - 0.0, 1.0) = 1.0
+	assert_approx_eq(p.health, 99.0, 0.001, "minimum damage is 1.0")
+	p.queue_free()
+
+func test_take_damage_with_armor() -> void:
+	var p = _make_player()
+	p.armor = 5.0
+	p.take_damage(30.0)
+	# maxf(30 * 1.0 - 5.0, 1.0) = 25.0
+	assert_approx_eq(p.health, 75.0, 0.001)
+	p.queue_free()
+
+func test_take_damage_with_damage_reduction() -> void:
+	var p = _make_player()
+	p.damage_reduction = 0.25
+	p.take_damage(40.0)
+	# maxf(40 * 0.75 - 0.0, 1.0) = 30.0
+	assert_approx_eq(p.health, 70.0, 0.001)
 	p.queue_free()
 
 func test_multiple_damage_instances_accumulate() -> void:
@@ -78,6 +95,26 @@ func test_died_signal_not_on_non_lethal_damage() -> void:
 	p.died.connect(func(): died[0] = true)
 	p.take_damage(50.0)
 	assert_false(died[0], "died signal must not fire for non-lethal damage")
+	p.queue_free()
+
+func test_revival_prevents_death() -> void:
+	var p = _make_player()
+	p.revival_hp_percent = 0.5
+	var died := [false]
+	p.died.connect(func(): died[0] = true)
+	p.take_damage(100.0)
+	assert_false(died[0], "revival should prevent death")
+	assert_approx_eq(p.health, 50.0, 0.001, "revival should heal to 50% of max")
+	p.queue_free()
+
+func test_revival_only_once() -> void:
+	var p = _make_player()
+	p.revival_hp_percent = 0.5
+	var died := [false]
+	p.died.connect(func(): died[0] = true)
+	p.take_damage(100.0)  # revival triggers
+	p.take_damage(100.0)  # should die
+	assert_true(died[0], "second lethal hit should kill after revival used")
 	p.queue_free()
 
 # --- XP collection ---
@@ -135,12 +172,12 @@ func test_level_up_signal_emitted() -> void:
 	assert_eq(leveled_to[0], 2, "level_up signal should pass the new level")
 	p.queue_free()
 
-func test_level_up_xp_to_next_scales_linearly() -> void:
+func test_level_up_xp_to_next_exponential() -> void:
 	var p = _make_player()
 	assert_eq(p.xp_to_next, 100)
 	p.collect_xp(100)
-	# level = 2, xp_to_next = 2 * 100 = 200
-	assert_eq(p.xp_to_next, 200)
+	# level = 2, xp_to_next = int(80.0 * pow(1.15, 1)) = int(92.0) = 92
+	assert_eq(p.xp_to_next, 92)
 	p.queue_free()
 
 func test_level_up_increases_max_health() -> void:
@@ -176,4 +213,22 @@ func test_single_collect_triggers_one_level_up() -> void:
 	p.collect_xp(200)
 	assert_eq(p.level, 2, "single collect_xp only triggers one level-up")
 	assert_eq(p.xp, 100)
+	p.queue_free()
+
+# --- Life steal ---
+
+func test_on_damage_dealt_heals_with_lifesteal() -> void:
+	var p = _make_player()
+	p.take_damage(50.0)  # health = 50
+	p.lifesteal = 0.05   # 5%
+	p.on_damage_dealt(100.0)
+	# heals 100 * 0.05 = 5.0
+	assert_approx_eq(p.health, 55.0, 0.001)
+	p.queue_free()
+
+func test_on_damage_dealt_no_heal_without_lifesteal() -> void:
+	var p = _make_player()
+	p.take_damage(50.0)  # health = 50
+	p.on_damage_dealt(100.0)
+	assert_approx_eq(p.health, 50.0, 0.001)
 	p.queue_free()
