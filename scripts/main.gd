@@ -41,9 +41,11 @@ func _ready() -> void:
 	player.projectiles_container = projectiles_container
 	player._main_node = self
 	player.apply_character_data(character_data)
+	_apply_meta_upgrades()
 	player.died.connect(_on_player_died)
 	player.level_up.connect(_on_level_up)
 	weapon_select_ui.item_chosen.connect(_on_item_chosen)
+	pause_menu.cash_out_requested.connect(_on_cash_out)
 	_setup_weapons()
 	_init_passive_pool()
 
@@ -73,6 +75,10 @@ func _process(delta: float) -> void:
 	if is_game_over:
 		return
 	time_elapsed += delta
+
+	if time_elapsed >= 900.0:
+		_on_run_complete()
+		return
 
 	# Screen shake
 	if _shake_timer > 0.0:
@@ -168,12 +174,48 @@ func _on_enemy_died_at(pos: Vector2, xp_value: int) -> void:
 		pickup.global_position = pos
 		pickup.setup(player)
 
+func _apply_meta_upgrades() -> void:
+	var vital_tier := GameState.get_upgrade_level("vital_core")
+	var speed_tier := GameState.get_upgrade_level("quick_feet")
+	var dmg_tier := GameState.get_upgrade_level("power_core")
+	var cd_tier := GameState.get_upgrade_level("accelerator")
+	var xp_tier := GameState.get_upgrade_level("scholar")
+	if vital_tier > 0:
+		player.max_health *= (1.0 + 0.10 * vital_tier)
+		player.health = player.max_health
+	if speed_tier > 0:
+		player.speed *= (1.0 + 0.05 * speed_tier)
+	if dmg_tier > 0:
+		player.damage_multiplier *= (1.0 + 0.05 * dmg_tier)
+	if cd_tier > 0:
+		player.cooldown_multiplier = maxf(player.cooldown_multiplier * (1.0 - 0.05 * cd_tier), 0.15)
+	if xp_tier > 0:
+		player.xp_multiplier *= (1.0 + 0.10 * xp_tier)
+
+func _on_cash_out() -> void:
+	_check_persistent_unlocks()
+	var souls_earned := int(time_elapsed / 60.0) * 10 + total_kills
+	GameState.add_souls(souls_earned)
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://scenes/character_select.tscn")
+
+func _on_run_complete() -> void:
+	is_game_over = true
+	get_tree().paused = true
+	_check_persistent_unlocks()
+	var souls_earned := int(time_elapsed / 60.0) * 10 + total_kills
+	GameState.add_souls(souls_earned)
+	var names: Array = player.weapons.map(func(w) -> String: return w.weapon_name)
+	hud.show_victory(time_elapsed, player.level, total_kills, total_damage_dealt, names, souls_earned)
+
 func _on_player_died() -> void:
 	is_game_over = true
 	get_tree().paused = true
 	_check_persistent_unlocks()
+	var souls_earned := int(time_elapsed / 60.0) * 10 + total_kills
+	GameState.add_souls(souls_earned)
 	var names: Array = player.weapons.map(func(w) -> String: return w.weapon_name)
-	hud.show_game_over(time_elapsed, player.level, total_kills, total_damage_dealt, names)
+	hud.show_game_over(time_elapsed, player.level, total_kills, total_damage_dealt, names, souls_earned)
 
 func _check_persistent_unlocks() -> void:
 	if time_elapsed >= 300.0:

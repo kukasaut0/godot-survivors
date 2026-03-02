@@ -16,9 +16,25 @@ const CHARACTER_UNLOCK_KEYS: Array[String] = [
 @onready var _hint_label: Label = $VBox/HintLabel
 
 var _select_buttons: Array[Button] = []
+var _souls_label: Label
+var _shop_button: Button
 
 func _ready() -> void:
 	_build_cards()
+
+	var vbox := $VBox as VBoxContainer
+	_souls_label = Label.new()
+	_souls_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_souls_label.modulate = Color(1, 0.85, 0, 1)
+	vbox.add_child(_souls_label)
+	vbox.move_child(_souls_label, 1)
+	_update_souls_label()
+
+	_shop_button = Button.new()
+	_shop_button.text = "Meta Shop"
+	_shop_button.pressed.connect(_open_shop)
+	vbox.add_child(_shop_button)
+
 	_wire_focus_neighbors()
 	if _select_buttons.size() > 0:
 		_select_buttons[0].grab_focus()
@@ -86,8 +102,29 @@ func _wire_focus_neighbors() -> void:
 		var next := _select_buttons[(i + 1) % _select_buttons.size()].get_path()
 		btn.focus_neighbor_left = prev
 		btn.focus_neighbor_right = next
-		btn.focus_neighbor_top = btn.get_path()
-		btn.focus_neighbor_bottom = btn.get_path()
+		btn.focus_neighbor_top = _shop_button.get_path()
+		btn.focus_neighbor_bottom = _shop_button.get_path()
+	if _shop_button != null:
+		var first := _select_buttons[0].get_path() if _select_buttons.size() > 0 else _shop_button.get_path()
+		_shop_button.focus_neighbor_top = first
+		_shop_button.focus_neighbor_bottom = first
+		_shop_button.focus_neighbor_left = _shop_button.get_path()
+		_shop_button.focus_neighbor_right = _shop_button.get_path()
+
+func _update_souls_label() -> void:
+	_souls_label.text = "Souls: %d" % GameState.get_souls()
+
+func _open_shop() -> void:
+	var shop = load("res://scripts/meta_shop.gd").new()
+	shop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(shop)
+	shop.closed.connect(_close_shop.bind(shop))
+
+func _close_shop(shop: Node) -> void:
+	shop.queue_free()
+	_update_souls_label()
+	if _shop_button != null:
+		_shop_button.grab_focus()
 
 func _on_character_selected(idx: int) -> void:
 	var data: CharacterData = load(CHARACTER_FILES[idx]) as CharacterData

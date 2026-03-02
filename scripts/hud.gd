@@ -30,14 +30,26 @@ func update_hud(player: CharacterBody2D, time_elapsed: float, kills: int = 0) ->
 	time_label.text = "  %02d:%02d" % [int(time_elapsed) / 60, int(time_elapsed) % 60]
 	kill_label.text = "  K:%d" % kills
 
-func show_game_over(time_elapsed: float, level_reached: int, kills: int = 0, damage: float = 0.0, weapon_names: Array = []) -> void:
+func show_game_over(time_elapsed: float, level_reached: int, kills: int = 0, damage: float = 0.0, weapon_names: Array = [], souls_earned: int = 0) -> void:
 	game_over_panel.visible = true
 	var weapons_str := ", ".join(weapon_names) if not weapon_names.is_empty() else "None"
-	result_label.text = "GAME OVER\nTime: %02d:%02d\nLevel: %d\nKills: %d\nDamage: %d\nWeapons: %s" % [
+	result_label.text = "GAME OVER\nTime: %02d:%02d\nLevel: %d\nKills: %d\nDamage: %d\nWeapons: %s\nSouls Earned: %d" % [
 		int(time_elapsed) / 60, int(time_elapsed) % 60,
-		level_reached, kills, int(damage), weapons_str
+		level_reached, kills, int(damage), weapons_str, souls_earned
 	]
+	char_select_button.text = "Cash Out Souls"
 	restart_button.grab_focus()
+
+func show_victory(time_elapsed: float, level_reached: int, kills: int = 0, damage: float = 0.0, weapon_names: Array = [], souls_earned: int = 0) -> void:
+	game_over_panel.visible = true
+	var weapons_str := ", ".join(weapon_names) if not weapon_names.is_empty() else "None"
+	result_label.text = "VICTORY!\nTime: %02d:%02d\nLevel: %d\nKills: %d\nDamage: %d\nWeapons: %s\nSouls Earned: %d" % [
+		int(time_elapsed) / 60, int(time_elapsed) % 60,
+		level_reached, kills, int(damage), weapons_str, souls_earned
+	]
+	restart_button.text = "Play Again"
+	char_select_button.text = "Cash Out Souls"
+	char_select_button.grab_focus()
 
 func show_boss_warning() -> void:
 	boss_warning_label.visible = true

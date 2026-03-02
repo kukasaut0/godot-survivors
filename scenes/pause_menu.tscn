@@ -44,3 +44,6 @@ text = "Resume"
 
 [node name="RestartButton" type="Button" parent="Panel/VBox"]
 text = "Restart"
+
+[node name="CashOutButton" type="Button" parent="Panel/VBox"]
+text = "Cash Out Souls"
