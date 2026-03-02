@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=14 format=3]
+[gd_resource type="Resource" script_class="LevelData" load_steps=31 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/level_data.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/data/enemy_spawn_wave.gd" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://data/enemies/normal.tres" id="4"]
 [ext_resource type="Resource" path="res://data/enemies/speeder.tres" id="5"]
 [ext_resource type="Resource" path="res://data/enemies/brute.tres" id="6"]
+[ext_resource type="Resource" path="res://data/enemies/swarm.tres" id="7"]
 
 [sub_resource type="Resource" id="e1_normal"]
 script = ExtResource("3")
@@ -15,66 +16,118 @@ weight = 1.0
 [sub_resource type="Resource" id="wave1"]
 script = ExtResource("2")
 start_time = 0.0
-end_time = 30.0
+end_time = 60.0
 spawn_entries = Array[Resource]([SubResource("e1_normal")])
 
 [sub_resource type="Resource" id="e2_normal"]
 script = ExtResource("3")
 enemy_data = ExtResource("4")
-weight = 0.65
+weight = 0.6
 
 [sub_resource type="Resource" id="e2_speeder"]
 script = ExtResource("3")
 enemy_data = ExtResource("5")
-weight = 0.35
+weight = 0.4
 
 [sub_resource type="Resource" id="wave2"]
 script = ExtResource("2")
-start_time = 30.0
-end_time = 90.0
+start_time = 60.0
+end_time = 150.0
 spawn_entries = Array[Resource]([SubResource("e2_normal"), SubResource("e2_speeder")])
 
 [sub_resource type="Resource" id="e3_normal"]
 script = ExtResource("3")
 enemy_data = ExtResource("4")
-weight = 0.45
+weight = 0.4
 
 [sub_resource type="Resource" id="e3_speeder"]
 script = ExtResource("3")
 enemy_data = ExtResource("5")
-weight = 0.35
+weight = 0.3
 
-[sub_resource type="Resource" id="e3_brute"]
+[sub_resource type="Resource" id="e3_swarm"]
 script = ExtResource("3")
-enemy_data = ExtResource("6")
-weight = 0.2
+enemy_data = ExtResource("7")
+weight = 0.3
 
 [sub_resource type="Resource" id="wave3"]
 script = ExtResource("2")
-start_time = 90.0
-end_time = 180.0
-spawn_entries = Array[Resource]([SubResource("e3_normal"), SubResource("e3_speeder"), SubResource("e3_brute")])
+start_time = 150.0
+end_time = 270.0
+spawn_entries = Array[Resource]([SubResource("e3_normal"), SubResource("e3_speeder"), SubResource("e3_swarm")])
 
 [sub_resource type="Resource" id="e4_normal"]
 script = ExtResource("3")
 enemy_data = ExtResource("4")
-weight = 0.4
+weight = 0.3
 
 [sub_resource type="Resource" id="e4_speeder"]
 script = ExtResource("3")
 enemy_data = ExtResource("5")
-weight = 0.35
+weight = 0.25
 
 [sub_resource type="Resource" id="e4_brute"]
 script = ExtResource("3")
 enemy_data = ExtResource("6")
+weight = 0.2
+
+[sub_resource type="Resource" id="e4_swarm"]
+script = ExtResource("3")
+enemy_data = ExtResource("7")
 weight = 0.25
 
 [sub_resource type="Resource" id="wave4"]
 script = ExtResource("2")
-start_time = 180.0
+start_time = 270.0
+end_time = 400.0
+spawn_entries = Array[Resource]([SubResource("e4_normal"), SubResource("e4_speeder"), SubResource("e4_brute"), SubResource("e4_swarm")])
+
+[sub_resource type="Resource" id="e5_normal"]
+script = ExtResource("3")
+enemy_data = ExtResource("4")
+weight = 0.25
+
+[sub_resource type="Resource" id="e5_speeder"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.25
+
+[sub_resource type="Resource" id="e5_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.25
+
+[sub_resource type="Resource" id="e5_swarm"]
+script = ExtResource("3")
+enemy_data = ExtResource("7")
+weight = 0.25
+
+[sub_resource type="Resource" id="wave5"]
+script = ExtResource("2")
+start_time = 400.0
+end_time = 520.0
+spawn_entries = Array[Resource]([SubResource("e5_normal"), SubResource("e5_speeder"), SubResource("e5_brute"), SubResource("e5_swarm")])
+
+[sub_resource type="Resource" id="e6_speeder"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.3
+
+[sub_resource type="Resource" id="e6_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.35
+
+[sub_resource type="Resource" id="e6_swarm"]
+script = ExtResource("3")
+enemy_data = ExtResource("7")
+weight = 0.35
+
+[sub_resource type="Resource" id="wave6"]
+script = ExtResource("2")
+start_time = 520.0
 end_time = inf
-spawn_entries = Array[Resource]([SubResource("e4_normal"), SubResource("e4_speeder"), SubResource("e4_brute")])
+spawn_entries = Array[Resource]([SubResource("e6_speeder"), SubResource("e6_brute"), SubResource("e6_swarm")])
 
 [resource]
 script = ExtResource("1")
@@ -88,4 +141,11 @@ spawn_count_per_30s = 1
 max_spawn_count = 4
 spawn_distance_min = 400.0
 spawn_distance_max = 600.0
-waves = Array[Resource]([SubResource("wave1"), SubResource("wave2"), SubResource("wave3"), SubResource("wave4")])
+waves = Array[Resource]([SubResource("wave1"), SubResource("wave2"), SubResource("wave3"), SubResource("wave4"), SubResource("wave5"), SubResource("wave6")])
+win_time = 600.0
+boss_spawn_times = Array[float]([300.0, 550.0])
+boss_data_path = "res://data/enemies/boss.tres"
+elite_chance = 0.05
+health_drop_chance = 0.05
+background_color = Color(0.05, 0.08, 0.05, 1)
+soul_multiplier = 1.0

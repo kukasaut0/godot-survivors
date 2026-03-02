@@ -27,17 +27,52 @@ var _shake_timer: float = 0.0
 var _shake_intensity: float = 0.0
 var _hud_timer: float = 0.0
 
-var _boss_spawn_times: Array[float] = [300.0, 600.0, 900.0]
+var _boss_spawn_times: Array[float] = []
 var _boss_data: EnemyData = null
+
+# Weapon discovery pool
+const MAX_WEAPONS := 6
+const ALL_WEAPON_IDS: Array[String] = ["magic_bolt", "holy_onion", "thunder_strike", "knife_fan", "jump", "boomerang", "spike_strip"]
+var _weapon_pool: Array[String] = []
+
+# Combo system
+var _combo_count: int = 0
+var _combo_timer: float = 0.0
+const COMBO_WINDOW: float = 2.0
+
+# Surge system
+var _surge_times: Array[float] = []
+var _surge_active: float = 0.0
+const SURGE_DURATION: float = 10.0
+const SURGE_INTERVAL: float = 180.0
+
+# Health drop chance (modified by meta upgrades)
+var _health_drop_chance: float = 0.05
+var _elite_chance: float = 0.10
 
 func _ready() -> void:
 	if GameState.selected_character_data != null:
 		character_data = GameState.selected_character_data
+	if GameState.selected_level_data != null:
+		level_data = GameState.selected_level_data
 	if character_data == null:
 		character_data = load("res://data/characters/default.tres")
 	if level_data == null:
 		level_data = load("res://data/levels/default.tres")
-	_boss_data = load("res://data/enemies/boss.tres")
+
+	# Load stage-specific data
+	_boss_spawn_times = level_data.boss_spawn_times.duplicate()
+	_boss_data = load(level_data.boss_data_path) as EnemyData
+	_elite_chance = level_data.elite_chance
+	_health_drop_chance = level_data.health_drop_chance
+	RenderingServer.set_default_clear_color(level_data.background_color)
+
+	# Build surge times
+	var t := SURGE_INTERVAL
+	while t < level_data.win_time - 30.0:
+		_surge_times.append(t)
+		t += SURGE_INTERVAL
+
 	player.projectiles_container = projectiles_container
 	player._main_node = self
 	player.apply_character_data(character_data)
@@ -48,9 +83,12 @@ func _ready() -> void:
 	pause_menu.cash_out_requested.connect(_on_cash_out)
 	_setup_weapons()
 	_init_passive_pool()
+	_build_weapon_pool()
 
 func _setup_weapons() -> void:
 	for entry in character_data.starting_weapons:
+		if entry.starting_level < 1:
+			continue
 		var weapon := WeaponRegistry.create_weapon(entry.weapon_id)
 		if weapon == null:
 			continue
@@ -66,17 +104,29 @@ func _init_passive_pool() -> void:
 		load("res://scripts/passives/passive_xp.gd"),
 		load("res://scripts/passives/passive_cooldown.gd"),
 		load("res://scripts/passives/passive_magnet.gd"),
+		load("res://scripts/passives/passive_armor.gd"),
+		load("res://scripts/passives/passive_lifesteal.gd"),
 	]
 	for scr in passive_scripts:
 		var item: PassiveItem = scr.new()
 		player.add_passive(item)
+
+func _build_weapon_pool() -> void:
+	var owned_ids: Array[String] = []
+	for entry in character_data.starting_weapons:
+		if entry.starting_level >= 1:
+			owned_ids.append(entry.weapon_id)
+	_weapon_pool.clear()
+	for wid in ALL_WEAPON_IDS:
+		if wid not in owned_ids:
+			_weapon_pool.append(wid)
 
 func _process(delta: float) -> void:
 	if is_game_over:
 		return
 	time_elapsed += delta
 
-	if time_elapsed >= 900.0:
+	if time_elapsed >= level_data.win_time:
 		_on_run_complete()
 		return
 
@@ -95,14 +145,33 @@ func _process(delta: float) -> void:
 			_boss_spawn_times.remove_at(i)
 			_spawn_boss()
 
-	# Regular spawns
+	# Surge events
+	for i in range(_surge_times.size() - 1, -1, -1):
+		if time_elapsed >= _surge_times[i]:
+			_surge_times.remove_at(i)
+			_surge_active = SURGE_DURATION
+			hud.show_surge_warning()
+
+	if _surge_active > 0.0:
+		_surge_active -= delta
+
+	# Combo timer
+	if _combo_timer > 0.0:
+		_combo_timer -= delta
+		if _combo_timer <= 0.0:
+			_combo_count = 0
+			hud.hide_combo()
+
+	# Non-linear spawn scaling
+	var spawn_interval := _compute_spawn_interval()
+	if _surge_active > 0.0:
+		spawn_interval /= 3.0
+
 	spawn_timer -= delta
-	var spawn_interval := maxf(
-		level_data.initial_spawn_interval - (time_elapsed / 30.0) * level_data.interval_decay_per_30s,
-		level_data.min_spawn_interval
-	)
 	if spawn_timer <= 0.0:
 		var count := mini(level_data.spawn_count_base + int(time_elapsed / 30.0) * level_data.spawn_count_per_30s, level_data.max_spawn_count)
+		if _surge_active > 0.0:
+			count = mini(count * 2, level_data.max_spawn_count * 2)
 		for i in count:
 			if enemies_container.get_child_count() < max_enemies:
 				_spawn_enemy()
@@ -111,7 +180,24 @@ func _process(delta: float) -> void:
 	_hud_timer -= delta
 	if _hud_timer <= 0.0:
 		_hud_timer = 0.1
-		hud.update_hud(player, time_elapsed, total_kills)
+		hud.update_hud(player, time_elapsed, total_kills, total_damage_dealt, level_data.display_name)
+
+func _compute_spawn_interval() -> float:
+	# Piecewise non-linear spawn scaling
+	var base := level_data.initial_spawn_interval
+	var result: float
+	if time_elapsed < 120.0:
+		# Gentle ramp (learning phase)
+		result = base - (time_elapsed / 120.0) * (base * 0.2)
+	elif time_elapsed < 480.0:
+		# Steady increase (core gameplay)
+		var progress := (time_elapsed - 120.0) / 360.0
+		result = base * 0.8 - progress * (base * 0.4)
+	else:
+		# Aggressive ramp (endgame)
+		var progress := minf((time_elapsed - 480.0) / 420.0, 1.0)
+		result = base * 0.4 - progress * (base * 0.25)
+	return maxf(result, level_data.min_spawn_interval)
 
 func trigger_screen_shake(intensity: float, duration: float) -> void:
 	_shake_intensity = intensity
@@ -125,10 +211,12 @@ func _spawn_enemy() -> void:
 	enemy.global_position = player.global_position + Vector2(cos(angle), sin(angle)) * dist
 	enemy.setup(player)
 	enemy.apply_enemy_data(_pick_enemy_data(), time_elapsed)
-	if randf() < 0.10:
+	if randf() < _elite_chance:
 		enemy.make_elite()
 	enemy.died_at.connect(_on_enemy_died_at)
-	enemy.damage_taken.connect(func(amount: float) -> void: total_damage_dealt += amount)
+	enemy.damage_taken.connect(func(amount: float) -> void:
+		total_damage_dealt += amount
+		player.on_damage_dealt(amount))
 
 func _spawn_boss() -> void:
 	if _boss_data == null:
@@ -142,7 +230,9 @@ func _spawn_boss() -> void:
 	enemy.setup(player)
 	enemy.apply_enemy_data(_boss_data, time_elapsed)
 	enemy.died_at.connect(_on_enemy_died_at)
-	enemy.damage_taken.connect(func(amount: float) -> void: total_damage_dealt += amount)
+	enemy.damage_taken.connect(func(amount: float) -> void:
+		total_damage_dealt += amount
+		player.on_damage_dealt(amount))
 
 func _pick_enemy_data() -> EnemyData:
 	for i in range(level_data.waves.size() - 1, -1, -1):
@@ -164,11 +254,26 @@ func _weighted_pick(entries: Array) -> EnemyData:
 
 func _on_enemy_died_at(pos: Vector2, xp_value: int) -> void:
 	total_kills += 1
+
+	# Combo system
+	_combo_count += 1
+	_combo_timer = COMBO_WINDOW
+	var xp_bonus: float = 1.0
+	if _combo_count >= 50:
+		xp_bonus = 2.0
+		hud.show_combo(_combo_count, "ULTRA!")
+	elif _combo_count >= 25:
+		xp_bonus = 1.5
+		hud.show_combo(_combo_count, "MEGA!")
+	elif _combo_count >= 10:
+		xp_bonus = 1.2
+		hud.show_combo(_combo_count, "COMBO x%d!" % _combo_count)
+
 	var gem: Area2D = xp_gem_scene.instantiate()
 	gems_container.add_child(gem)
 	gem.global_position = pos
-	gem.setup(xp_value, player)
-	if randf() < 0.05:
+	gem.setup(int(xp_value * xp_bonus), player)
+	if randf() < _health_drop_chance:
 		var pickup: Area2D = health_pickup_scene.instantiate()
 		gems_container.add_child(pickup)
 		pickup.global_position = pos
@@ -180,6 +285,9 @@ func _apply_meta_upgrades() -> void:
 	var dmg_tier := GameState.get_upgrade_level("power_core")
 	var cd_tier := GameState.get_upgrade_level("accelerator")
 	var xp_tier := GameState.get_upgrade_level("scholar")
+	var lucky_tier := GameState.get_upgrade_level("lucky")
+	var armor_tier := GameState.get_upgrade_level("armor")
+	var revival_tier := GameState.get_upgrade_level("revival")
 	if vital_tier > 0:
 		player.max_health *= (1.0 + 0.10 * vital_tier)
 		player.health = player.max_health
@@ -191,10 +299,17 @@ func _apply_meta_upgrades() -> void:
 		player.cooldown_multiplier = maxf(player.cooldown_multiplier * (1.0 - 0.05 * cd_tier), 0.15)
 	if xp_tier > 0:
 		player.xp_multiplier *= (1.0 + 0.10 * xp_tier)
+	if lucky_tier > 0:
+		_health_drop_chance += 0.03 * lucky_tier
+	if armor_tier > 0:
+		player.damage_reduction = 0.05 * armor_tier
+	if revival_tier > 0:
+		var percents := [0.3, 0.4, 0.5, 0.6, 0.75]
+		player.revival_hp_percent = percents[mini(revival_tier - 1, percents.size() - 1)]
 
 func _on_cash_out() -> void:
 	_check_persistent_unlocks()
-	var souls_earned := int(time_elapsed / 60.0) * 10 + total_kills
+	var souls_earned := int((int(time_elapsed / 60.0) * 10 + total_kills) * level_data.soul_multiplier)
 	GameState.add_souls(souls_earned)
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/character_select.tscn")
@@ -203,7 +318,15 @@ func _on_run_complete() -> void:
 	is_game_over = true
 	get_tree().paused = true
 	_check_persistent_unlocks()
-	var souls_earned := int(time_elapsed / 60.0) * 10 + total_kills
+	# Mark stage clear
+	match level_data.id:
+		"default":
+			GameState.set_unlock("stage_fields_clear", true)
+		"crypt":
+			GameState.set_unlock("stage_crypt_clear", true)
+		"abyss":
+			GameState.set_unlock("stage_abyss_clear", true)
+	var souls_earned := int((int(time_elapsed / 60.0) * 10 + total_kills) * level_data.soul_multiplier)
 	GameState.add_souls(souls_earned)
 	var names: Array = player.weapons.map(func(w) -> String: return w.weapon_name)
 	hud.show_victory(time_elapsed, player.level, total_kills, total_damage_dealt, names, souls_earned)
@@ -212,36 +335,87 @@ func _on_player_died() -> void:
 	is_game_over = true
 	get_tree().paused = true
 	_check_persistent_unlocks()
-	var souls_earned := int(time_elapsed / 60.0) * 10 + total_kills
+	var souls_earned := int((int(time_elapsed / 60.0) * 10 + total_kills) * level_data.soul_multiplier)
 	GameState.add_souls(souls_earned)
 	var names: Array = player.weapons.map(func(w) -> String: return w.weapon_name)
 	hud.show_game_over(time_elapsed, player.level, total_kills, total_damage_dealt, names, souls_earned)
 
 func _check_persistent_unlocks() -> void:
-	if time_elapsed >= 300.0:
+	# Speedster: Kill 500 enemies in a single run
+	if total_kills >= 500:
 		GameState.set_unlock("char_speeder_hero", true)
+	# Tank: Survive 10 minutes
+	if time_elapsed >= 600.0:
 		GameState.set_unlock("char_tank_hero", true)
+	# Mage: Reach level 20
+	if player.level >= 20:
+		GameState.set_unlock("char_mage", true)
 
 func _on_level_up(_lvl: int) -> void:
-	var owned: Array = []
-	var new_pool: Array = []
+	var upgrades: Array = []
+	var new_weapons: Array = []
+	var new_passives: Array = []
+
+	# Owned weapons that can be upgraded
 	for w in player.weapons:
 		if w.can_upgrade():
-			(owned if w.level >= 1 else new_pool).append(w)
+			upgrades.append(w)
+
+	# Owned passives that can be upgraded
 	for p in player.passives:
-		if p.can_upgrade():
-			(owned if p.level >= 1 else new_pool).append(p)
-	owned.append_array(_check_evolutions())
-	if owned.is_empty() and new_pool.is_empty():
-		return
-	owned.shuffle()
-	new_pool.shuffle()
+		if p.can_upgrade() and p.is_acquired():
+			upgrades.append(p)
+
+	# Un-acquired passives as new options
+	for p in player.passives:
+		if not p.is_acquired() and p.can_upgrade():
+			new_passives.append(p)
+
+	# Available evolutions
+	var evolutions := _check_evolutions()
+	upgrades.append_array(evolutions)
+
+	# Build options: 1 upgrade, 1 new weapon (if under cap), fill rest
+	upgrades.shuffle()
+	new_passives.shuffle()
+	_weapon_pool.shuffle()
+
 	var options: Array = []
-	if not owned.is_empty():
-		options.append(owned.pop_back())
-	var rest := owned + new_pool
-	rest.shuffle()
-	options.append_array(rest.slice(0, mini(2, rest.size())))
+
+	# Slot 1: prioritize owned upgrade
+	if not upgrades.is_empty():
+		options.append(upgrades.pop_back())
+
+	# Slot 2: offer new weapon from pool if under cap
+	if player.weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
+		var wid: String = _weapon_pool[0]
+		var w := WeaponRegistry.create_weapon(wid)
+		if w != null:
+			player.add_weapon(w)
+			_weapon_pool.remove_at(0)
+			new_weapons.append(w)
+			options.append(w)
+
+	# Slot 3: fill with remaining upgrades, new passives, or new weapons
+	var fill_pool: Array = upgrades + new_passives
+	fill_pool.shuffle()
+	while options.size() < 3 and not fill_pool.is_empty():
+		var item = fill_pool.pop_back()
+		if item not in options:
+			options.append(item)
+
+	# If still need options and have weapons in pool
+	while options.size() < 3 and player.weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
+		var wid: String = _weapon_pool[0]
+		var w := WeaponRegistry.create_weapon(wid)
+		if w != null:
+			player.add_weapon(w)
+			_weapon_pool.remove_at(0)
+			options.append(w)
+
+	if options.is_empty():
+		return
+
 	options.shuffle()
 	get_tree().paused = true
 	weapon_select_ui.show_options(options)
@@ -271,6 +445,16 @@ func _check_evolutions() -> Array:
 			var already_evolved: bool = player.weapons.any(func(w) -> bool: return w is StormTempest)
 			if not already_evolved:
 				result.append(EvolutionOffer.new().init("Storm Tempest", "storm_tempest", ts, kf, player))
+	# CycloneDash: boomerang (Boomerang) + jump (Jump)
+	var has_boom := weapon_map.has(Boomerang)
+	var has_jump := weapon_map.has(Jump)
+	if has_boom and has_jump:
+		var boom: WeaponBase = weapon_map[Boomerang]
+		var jmp: WeaponBase = weapon_map[Jump]
+		if boom.is_maxed() and jmp.is_maxed():
+			var already_evolved: bool = player.weapons.any(func(w) -> bool: return w is CycloneDash)
+			if not already_evolved:
+				result.append(EvolutionOffer.new().init("Cyclone Dash", "cyclone_dash", boom, jmp, player))
 	return result
 
 func _on_item_chosen(item) -> void:

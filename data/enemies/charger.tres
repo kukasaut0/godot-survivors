@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "charger"
+base_speed = 75.0
+speed_time_scale = 0.15
+health = 80.0
+damage = 30.0
+xp_value = 25
+contact_dist = 35.0
+modulate_color = Color(1, 0.3, 0.1, 1)
+sprite_scale = Vector2(0.5, 0.5)
+collision_scale = Vector2(1.2, 1.2)
+phase_through = false
+charges = true
+charge_interval = 3.0
+charge_speed_mult = 3.0
+charge_duration = 0.5

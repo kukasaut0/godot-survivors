@@ -1,0 +1,173 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=37 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/level_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/enemy_spawn_wave.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/data/enemy_spawn_entry.gd" id="3"]
+[ext_resource type="Resource" path="res://data/enemies/normal.tres" id="4"]
+[ext_resource type="Resource" path="res://data/enemies/speeder.tres" id="5"]
+[ext_resource type="Resource" path="res://data/enemies/brute.tres" id="6"]
+[ext_resource type="Resource" path="res://data/enemies/ghost.tres" id="7"]
+[ext_resource type="Resource" path="res://data/enemies/charger.tres" id="8"]
+[ext_resource type="Resource" path="res://data/enemies/swarm.tres" id="9"]
+
+[sub_resource type="Resource" id="w1_normal"]
+script = ExtResource("3")
+enemy_data = ExtResource("4")
+weight = 0.4
+
+[sub_resource type="Resource" id="w1_speeder"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.3
+
+[sub_resource type="Resource" id="w1_swarm"]
+script = ExtResource("3")
+enemy_data = ExtResource("9")
+weight = 0.3
+
+[sub_resource type="Resource" id="wave1"]
+script = ExtResource("2")
+start_time = 0.0
+end_time = 80.0
+spawn_entries = Array[Resource]([SubResource("w1_normal"), SubResource("w1_speeder"), SubResource("w1_swarm")])
+
+[sub_resource type="Resource" id="w2_speeder"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.25
+
+[sub_resource type="Resource" id="w2_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("7")
+weight = 0.25
+
+[sub_resource type="Resource" id="w2_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("8")
+weight = 0.25
+
+[sub_resource type="Resource" id="w2_swarm"]
+script = ExtResource("3")
+enemy_data = ExtResource("9")
+weight = 0.25
+
+[sub_resource type="Resource" id="wave2"]
+script = ExtResource("2")
+start_time = 80.0
+end_time = 200.0
+spawn_entries = Array[Resource]([SubResource("w2_speeder"), SubResource("w2_ghost"), SubResource("w2_charger"), SubResource("w2_swarm")])
+
+[sub_resource type="Resource" id="w3_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.2
+
+[sub_resource type="Resource" id="w3_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("7")
+weight = 0.25
+
+[sub_resource type="Resource" id="w3_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("8")
+weight = 0.3
+
+[sub_resource type="Resource" id="w3_swarm"]
+script = ExtResource("3")
+enemy_data = ExtResource("9")
+weight = 0.25
+
+[sub_resource type="Resource" id="wave3"]
+script = ExtResource("2")
+start_time = 200.0
+end_time = 350.0
+spawn_entries = Array[Resource]([SubResource("w3_brute"), SubResource("w3_ghost"), SubResource("w3_charger"), SubResource("w3_swarm")])
+
+[sub_resource type="Resource" id="w4_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.25
+
+[sub_resource type="Resource" id="w4_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("7")
+weight = 0.25
+
+[sub_resource type="Resource" id="w4_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("8")
+weight = 0.3
+
+[sub_resource type="Resource" id="w4_speeder"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.2
+
+[sub_resource type="Resource" id="wave4"]
+script = ExtResource("2")
+start_time = 350.0
+end_time = 500.0
+spawn_entries = Array[Resource]([SubResource("w4_brute"), SubResource("w4_ghost"), SubResource("w4_charger"), SubResource("w4_speeder")])
+
+[sub_resource type="Resource" id="w5_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.3
+
+[sub_resource type="Resource" id="w5_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("8")
+weight = 0.4
+
+[sub_resource type="Resource" id="w5_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("7")
+weight = 0.3
+
+[sub_resource type="Resource" id="wave5"]
+script = ExtResource("2")
+start_time = 500.0
+end_time = 700.0
+spawn_entries = Array[Resource]([SubResource("w5_brute"), SubResource("w5_charger"), SubResource("w5_ghost")])
+
+[sub_resource type="Resource" id="w6_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("8")
+weight = 0.35
+
+[sub_resource type="Resource" id="w6_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("7")
+weight = 0.3
+
+[sub_resource type="Resource" id="w6_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.35
+
+[sub_resource type="Resource" id="wave6"]
+script = ExtResource("2")
+start_time = 700.0
+end_time = inf
+spawn_entries = Array[Resource]([SubResource("w6_charger"), SubResource("w6_ghost"), SubResource("w6_brute")])
+
+[resource]
+script = ExtResource("1")
+id = "abyss"
+display_name = "The Abyss"
+initial_spawn_interval = 1.0
+min_spawn_interval = 0.2
+interval_decay_per_30s = 0.1
+spawn_count_base = 2
+spawn_count_per_30s = 1
+max_spawn_count = 6
+spawn_distance_min = 350.0
+spawn_distance_max = 550.0
+waves = Array[Resource]([SubResource("wave1"), SubResource("wave2"), SubResource("wave3"), SubResource("wave4"), SubResource("wave5"), SubResource("wave6")])
+win_time = 900.0
+boss_spawn_times = Array[float]([240.0, 480.0, 720.0, 880.0])
+boss_data_path = "res://data/enemies/boss_abyss.tres"
+elite_chance = 0.18
+health_drop_chance = 0.05
+background_color = Color(0.12, 0.02, 0.02, 1)
+soul_multiplier = 2.0
