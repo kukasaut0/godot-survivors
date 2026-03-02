@@ -15,7 +15,7 @@ func _process(delta: float) -> void:
 	var magnet_radius: float = _player.xp_magnet_radius if "xp_magnet_radius" in _player else 200.0
 	var dist_sq := global_position.distance_squared_to(_player.global_position)
 	if dist_sq <= collect_radius * collect_radius:
-		_player.collect_xp(xp_value)
+		_player.collect_xp(xp_value * 2)
 		queue_free()
 	elif dist_sq <= magnet_radius * magnet_radius:
 		var dir := (_player.global_position - global_position).normalized()
