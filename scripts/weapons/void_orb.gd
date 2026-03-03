@@ -1,10 +1,10 @@
 extends WeaponBase
 class_name VoidOrb
 
-var bolt_damage: float = 30.0
+var bolt_damage: float = 24.0
 var bolt_count: int = 4
 var bolt_cooldown: float = 0.4
-var aura_damage: float = 15.0
+var aura_damage: float = 14.4
 var aura_radius: float = 200.0
 var aura_tick: float = 0.4
 
@@ -27,22 +27,15 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		1:
-			bolt_damage = 30.0
-			bolt_count = 4
-			bolt_cooldown = 0.4
-			aura_damage = 18.0
-			aura_radius = 200.0
-			aura_tick = 0.4
 		2:
-			bolt_damage = 42.0
-			aura_damage = 26.4
+			bolt_damage = 33.6
+			aura_damage = 21.12
 		3:
 			aura_radius = 260.0
 			bolt_count = 6
 		4:
-			bolt_damage = 60.0
-			aura_damage = 36.0
+			bolt_damage = 48.0
+			aura_damage = 28.8
 			aura_tick = 0.3
 	queue_redraw()
 
@@ -53,14 +46,10 @@ func get_next_upgrade_description() -> String:
 	return UPGRADE_DESCRIPTIONS[next - 1]
 
 func _draw() -> void:
-	if level == 0:
-		return
 	draw_circle(Vector2.ZERO, aura_radius, Color(0.5, 0, 1, 0.07))
 	draw_arc(Vector2.ZERO, aura_radius, 0.0, TAU, 64, Color(0.5, 0, 1, 0.5), 2.0)
 
 func _physics_process(delta: float) -> void:
-	if level == 0:
-		return
 	var dmg_mult: float = _player.damage_multiplier if "damage_multiplier" in _player else 1.0
 	_bolt_timer -= delta
 	if _bolt_timer <= 0.0:

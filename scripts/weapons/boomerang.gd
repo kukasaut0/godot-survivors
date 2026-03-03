@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name Boomerang
 
-var damage: float = 15.0
+var damage: float = 12.0
 var orbit_radius: float = 100.0
 var orbit_speed: float = 3.0
 var blade_count: int = 1
@@ -27,21 +27,16 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		1:
-			damage = 15.0
-			blade_count = 1
-			orbit_radius = 100.0
-			orbit_speed = 3.0
 		2:
 			blade_count = 2
 		3:
-			damage = 22.0
+			damage = 17.6
 			orbit_radius = 120.0
 		4:
 			orbit_speed = 4.0
 		5:
 			blade_count = 3
-			damage = 30.0
+			damage = 24.0
 		6:
 			orbit_radius = 150.0
 		7:
@@ -49,7 +44,7 @@ func _on_upgrade() -> void:
 			orbit_speed = 4.5
 		8:
 			blade_count = 5
-			damage = 45.0
+			damage = 36.0
 			orbit_radius = 180.0
 			orbit_speed = 5.0
 	queue_redraw()
@@ -61,8 +56,6 @@ func get_next_upgrade_description() -> String:
 	return UPGRADE_DESCRIPTIONS[next - 1]
 
 func _physics_process(delta: float) -> void:
-	if level == 0:
-		return
 	_angle += orbit_speed * delta
 
 	# Clear expired hit cooldowns
@@ -92,8 +85,6 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	if level == 0:
-		return
 	for i in blade_count:
 		var blade_angle: float = _angle + (TAU / float(blade_count)) * float(i)
 		var local_pos: Vector2 = Vector2(cos(blade_angle), sin(blade_angle)) * orbit_radius

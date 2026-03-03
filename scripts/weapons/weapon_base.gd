@@ -6,7 +6,7 @@ signal upgraded(weapon: WeaponBase)
 var weapon_name: String = ""
 var weapon_description: String = ""
 var max_level: int = 8
-var level: int = 0
+var level: int = 1
 
 var _player: Node2D = null
 var _projectiles_container: Node = null

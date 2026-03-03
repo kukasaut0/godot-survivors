@@ -34,6 +34,7 @@ var _boss_data: EnemyData = null
 const MAX_WEAPONS := 6
 const ALL_WEAPON_IDS: Array[String] = ["magic_bolt", "holy_onion", "thunder_strike", "knife_fan", "jump", "boomerang", "spike_strip"]
 var _weapon_pool: Array[String] = []
+var _pending_new_weapons: Array = []
 
 # Combo system
 var _combo_count: int = 0
@@ -93,7 +94,7 @@ func _setup_weapons() -> void:
 		if weapon == null:
 			continue
 		player.add_weapon(weapon)
-		for i in entry.starting_level:
+		for i in entry.starting_level - 1:
 			weapon.upgrade()
 
 func _init_passive_pool() -> void:
@@ -260,13 +261,13 @@ func _on_enemy_died_at(pos: Vector2, xp_value: int) -> void:
 	_combo_timer = COMBO_WINDOW
 	var xp_bonus: float = 1.0
 	if _combo_count >= 50:
-		xp_bonus = 2.0
+		xp_bonus = 1.10
 		hud.show_combo(_combo_count, "ULTRA!")
 	elif _combo_count >= 25:
-		xp_bonus = 1.5
+		xp_bonus = 1.08
 		hud.show_combo(_combo_count, "MEGA!")
 	elif _combo_count >= 10:
-		xp_bonus = 1.2
+		xp_bonus = 1.05
 		hud.show_combo(_combo_count, "COMBO x%d!" % _combo_count)
 
 	var gem: Area2D = xp_gem_scene.instantiate()
@@ -387,12 +388,13 @@ func _on_level_up(_lvl: int) -> void:
 		options.append(upgrades.pop_back())
 
 	# Slot 2: offer new weapon from pool if under cap
-	if player.weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
+	if player.weapons.size() + _pending_new_weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
 		var wid: String = _weapon_pool[0]
 		var w := WeaponRegistry.create_weapon(wid)
 		if w != null:
-			player.add_weapon(w)
+			w.setup(player, projectiles_container)
 			_weapon_pool.remove_at(0)
+			_pending_new_weapons.append(w)
 			new_weapons.append(w)
 			options.append(w)
 
@@ -405,12 +407,13 @@ func _on_level_up(_lvl: int) -> void:
 			options.append(item)
 
 	# If still need options and have weapons in pool
-	while options.size() < 3 and player.weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
+	while options.size() < 3 and player.weapons.size() + _pending_new_weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
 		var wid: String = _weapon_pool[0]
 		var w := WeaponRegistry.create_weapon(wid)
 		if w != null:
-			player.add_weapon(w)
+			w.setup(player, projectiles_container)
 			_weapon_pool.remove_at(0)
+			_pending_new_weapons.append(w)
 			options.append(w)
 
 	if options.is_empty():
@@ -458,6 +461,12 @@ func _check_evolutions() -> Array:
 	return result
 
 func _on_item_chosen(item) -> void:
+	if item is WeaponBase and item not in player.weapons:
+		player.add_weapon(item)
+		_pending_new_weapons.erase(item)
+	for w in _pending_new_weapons:
+		w.queue_free()
+	_pending_new_weapons.clear()
 	item.upgrade()
 	get_tree().paused = false
 

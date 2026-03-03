@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name SpikeStrip
 
-var damage_per_tick: float = 8.0
+var damage_per_tick: float = 6.4
 var zone_radius: float = 60.0
 var zone_duration: float = 4.0
 var drop_cooldown: float = 3.0
@@ -28,32 +28,26 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		1:
-			damage_per_tick = 8.0
-			zone_radius = 60.0
-			zone_duration = 4.0
-			drop_cooldown = 3.0
-			max_zones = 3
 		2:
-			damage_per_tick = 11.0
+			damage_per_tick = 8.8
 			max_zones = 4
 		3:
 			zone_radius = 75.0
 			drop_cooldown = 2.5
 		4:
 			zone_duration = 5.0
-			damage_per_tick = 15.0
+			damage_per_tick = 12.0
 		5:
 			max_zones = 5
 			zone_radius = 85.0
 		6:
 			drop_cooldown = 2.0
-			damage_per_tick = 19.0
+			damage_per_tick = 15.2
 		7:
 			zone_duration = 5.5
 			max_zones = 5
 		8:
-			damage_per_tick = 24.0
+			damage_per_tick = 19.2
 			zone_radius = 100.0
 			zone_duration = 6.0
 			drop_cooldown = 1.5
@@ -66,9 +60,6 @@ func get_next_upgrade_description() -> String:
 	return UPGRADE_DESCRIPTIONS[next - 1]
 
 func _physics_process(delta: float) -> void:
-	if level == 0:
-		return
-
 	# Update zones
 	for i in range(_zones.size() - 1, -1, -1):
 		_zones[i].timer -= delta
@@ -103,8 +94,6 @@ func _damage_enemies_in_zone(zone_pos: Vector2) -> void:
 			e.take_damage(damage_per_tick * dmg_mult)
 
 func _draw() -> void:
-	if level == 0:
-		return
 	for zone in _zones:
 		var local_pos: Vector2 = to_local(zone.pos)
 		var alpha: float = clampf(zone.timer / zone_duration, 0.1, 0.5)

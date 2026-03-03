@@ -25,9 +25,6 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		1:
-			boost_speed = 500.0
-			dash_cooldown = 4.0
 		2:
 			boost_speed = 700.0
 		3:
@@ -51,9 +48,6 @@ func get_next_upgrade_description() -> String:
 	return UPGRADE_DESCRIPTIONS[next - 1]
 
 func _physics_process(delta: float) -> void:
-	if level == 0:
-		return
-
 	_dash_timer -= delta
 	_boost_time -= delta
 

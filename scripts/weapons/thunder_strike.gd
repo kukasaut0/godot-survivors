@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name ThunderStrike
 
-var damage: float = 36.0
+var damage: float = 28.8
 var target_count: int = 1
 var strike_interval: float = 3.0
 var _timer: float = 0.0
@@ -24,28 +24,24 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		1:
-			damage = 36.0
-			target_count = 1
-			strike_interval = 3.0
 		2:
 			target_count = 2
 		3:
-			damage = 60.0
+			damage = 48.0
 			strike_interval = 2.5
 		4:
 			target_count = 3
 		5:
-			damage = 84.0
+			damage = 67.2
 			strike_interval = 2.0
 		6:
 			target_count = 4
 		7:
-			damage = 120.0
+			damage = 96.0
 			strike_interval = 1.5
 		8:
 			target_count = 5
-			damage = 144.0
+			damage = 115.2
 			strike_interval = 1.0
 
 func get_next_upgrade_description() -> String:
@@ -60,8 +56,6 @@ func _draw() -> void:
 		draw_circle(pos, 6.0, Color(1.0, 1.0, 1.0, 0.9))
 
 func _physics_process(delta: float) -> void:
-	if level == 0:
-		return
 	_timer -= delta
 	if _timer <= 0.0:
 		_timer = strike_interval

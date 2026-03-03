@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name ProjectileWeapon
 
-var damage: float = 18.0
+var damage: float = 14.4
 var shoot_cooldown: float = 0.8
 var projectile_count: int = 1
 var _shoot_timer: float = 0.0
@@ -25,10 +25,6 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		1:
-			damage = 18.0
-			shoot_cooldown = 0.8
-			projectile_count = 1
 		2:
 			shoot_cooldown *= 0.8
 		3:
@@ -52,8 +48,6 @@ func get_next_upgrade_description() -> String:
 	return UPGRADE_DESCRIPTIONS[next - 1]
 
 func _physics_process(delta: float) -> void:
-	if level == 0:
-		return
 	_shoot_timer -= delta
 	if _shoot_timer <= 0.0:
 		var targets := _find_nearest_enemies(projectile_count)

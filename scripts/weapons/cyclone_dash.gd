@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name CycloneDash
 
-var orbit_damage: float = 40.0
+var orbit_damage: float = 32.0
 var orbit_radius: float = 150.0
 var orbit_speed: float = 5.0
 var blade_count: int = 5
@@ -32,22 +32,15 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		1:
-			orbit_damage = 40.0
-			orbit_radius = 150.0
-			orbit_speed = 5.0
-			blade_count = 5
-			dash_cooldown = 3.0
-			boost_speed = 800.0
 		2:
-			orbit_damage = 56.0
+			orbit_damage = 44.8
 			blade_count = 6
 			orbit_speed = 6.0
 		3:
 			orbit_radius = 200.0
 			boost_speed = 900.0
 		4:
-			orbit_damage = 70.0
+			orbit_damage = 56.0
 			blade_count = 7
 			orbit_radius = 250.0
 			dash_cooldown = 2.0
@@ -60,9 +53,6 @@ func get_next_upgrade_description() -> String:
 	return UPGRADE_DESCRIPTIONS[next - 1]
 
 func _physics_process(delta: float) -> void:
-	if level == 0:
-		return
-
 	_dash_timer -= delta
 	_boost_time -= delta
 
@@ -123,8 +113,6 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	if level == 0:
-		return
 	var current_radius := orbit_radius * (3.0 if _is_dashing else 1.0)
 	var color := Color(0.3, 1, 1, 0.9) if _is_dashing else Color(0.6, 0.8, 1, 0.9)
 	for i in blade_count:

@@ -9,14 +9,14 @@ var _config := ConfigFile.new()
 const UPGRADE_IDS: Array[String] = ["vital_core", "quick_feet", "power_core", "accelerator", "scholar", "lucky", "armor", "revival"]
 const UPGRADE_MAX_TIER: int = 5
 const UPGRADE_COSTS: Dictionary = {
-	"vital_core":  [50, 100, 200, 400, 800],
-	"quick_feet":  [50, 100, 200, 400, 800],
-	"power_core":  [75, 150, 300, 600, 1200],
-	"accelerator": [75, 150, 300, 600, 1200],
-	"scholar":     [50, 100, 200, 400, 800],
-	"lucky":       [50, 100, 200, 400, 800],
-	"armor":       [75, 150, 300, 600, 1200],
-	"revival":     [100, 200, 400, 800, 1500],
+	"vital_core":  [70, 140, 280, 560, 1120],
+	"quick_feet":  [70, 140, 280, 560, 1120],
+	"power_core":  [105, 210, 420, 840, 1680],
+	"accelerator": [105, 210, 420, 840, 1680],
+	"scholar":     [70, 140, 280, 560, 1120],
+	"lucky":       [70, 140, 280, 560, 1120],
+	"armor":       [105, 210, 420, 840, 1680],
+	"revival":     [140, 280, 560, 1120, 2100],
 }
 const UPGRADE_NAMES: Dictionary = {
 	"vital_core":  "Vital Core",

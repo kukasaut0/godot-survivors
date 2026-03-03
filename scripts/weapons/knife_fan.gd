@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name KnifeFan
 
-var damage: float = 12.0
+var damage: float = 9.6
 var projectile_count: int = 4
 var fire_interval: float = 2.5
 var _timer: float = 0.0
@@ -25,25 +25,21 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		1:
-			damage = 12.0
-			projectile_count = 4
-			fire_interval = 2.5
 		2:
-			damage = 18.0
+			damage = 14.4
 		3:
 			projectile_count = 8
 		4:
 			fire_interval = 2.0
 		5:
-			damage = 24.0
+			damage = 19.2
 		6:
 			projectile_count = 12
 		7:
 			fire_interval = 1.5
 		8:
 			projectile_count = 16
-			damage = 36.0
+			damage = 28.8
 
 func get_next_upgrade_description() -> String:
 	var next := level + 1
@@ -52,8 +48,6 @@ func get_next_upgrade_description() -> String:
 	return UPGRADE_DESCRIPTIONS[next - 1]
 
 func _physics_process(delta: float) -> void:
-	if level == 0:
-		return
 	_timer -= delta
 	if _timer <= 0.0:
 		_timer = fire_interval

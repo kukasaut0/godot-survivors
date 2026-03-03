@@ -42,7 +42,9 @@ func _ready() -> void:
 	_enemy_count += 1
 	add_to_group("enemies")
 	var vp_size := get_viewport().get_visible_rect().size
-	var threshold: float = vp_size.length() * 0.8
+	var camera := get_viewport().get_camera_2d()
+	var zoom_val: float = camera.zoom.x if camera != null else 1.0
+	var threshold: float = (vp_size / zoom_val).length() * 1.6
 	_reposition_threshold_sq = threshold * threshold
 	_sep_frame = randi() % SEP_INTERVAL
 
@@ -122,7 +124,7 @@ func _physics_process(delta: float) -> void:
 
 	_damage_timer -= delta
 	if _damage_timer <= 0.0 and global_position.distance_squared_to(_player.global_position) < contact_dist * contact_dist:
-		_player.take_damage(damage)
+		_player.take_damage(damage * 3.0)
 		_damage_timer = DAMAGE_COOLDOWN
 	if global_position.distance_squared_to(_player.global_position) > _reposition_threshold_sq:
 		_reposition()
@@ -152,9 +154,9 @@ func _process_charge(delta: float) -> void:
 			_flash_timer = _charge_duration
 
 func _reposition() -> void:
-	var angle: float = randf() * TAU
+	var opposite_dir: Vector2 = (_player.global_position - global_position).normalized()
 	var dist: float = randf_range(400.0, 600.0)
-	global_position = _player.global_position + Vector2(cos(angle), sin(angle)) * dist
+	global_position = _player.global_position + opposite_dir * dist
 
 func take_damage(amount: float) -> void:
 	var actual := minf(amount, health)

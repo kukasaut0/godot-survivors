@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name AuraWeapon
 
-var damage: float = 6.0
+var damage: float = 4.8
 var radius: float = 120.0
 var tick_interval: float = 0.5
 var _tick_timer: float = 0.0
@@ -23,25 +23,21 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		1:
-			damage = 6.0
-			radius = 120.0
-			tick_interval = 0.5
 		2:
 			radius = 160.0
 		3:
-			damage = 9.6
+			damage = 7.68
 		4:
 			tick_interval = 0.35
 		5:
 			radius = 200.0
 		6:
-			damage = 16.8
+			damage = 13.44
 		7:
 			tick_interval = 0.25
 		8:
 			radius = 260.0
-			damage = 24.0
+			damage = 19.2
 	queue_redraw()
 
 func get_next_upgrade_description() -> String:
@@ -51,14 +47,10 @@ func get_next_upgrade_description() -> String:
 	return UPGRADE_DESCRIPTIONS[next - 1]
 
 func _draw() -> void:
-	if level == 0:
-		return
 	draw_circle(Vector2.ZERO, radius, Color(0.3, 1, 0.3, 0.07))
 	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, Color(0.3, 1, 0.3, 0.5), 2.0)
 
 func _physics_process(delta: float) -> void:
-	if level == 0:
-		return
 	_tick_timer -= delta
 	if _tick_timer <= 0.0:
 		_tick_timer = tick_interval
