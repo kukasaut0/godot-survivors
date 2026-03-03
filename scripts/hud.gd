@@ -15,6 +15,7 @@ var _stage_label: Label
 var _dps_label: Label
 var _combo_label: Label
 var _surge_label: Label
+var _review_vbox: VBoxContainer
 
 func _ready() -> void:
 	game_over_panel.visible = false
@@ -75,6 +76,12 @@ func _ready() -> void:
 	_surge_label.text = "INCOMING SURGE!"
 	add_child(_surge_label)
 
+	# Review container inserted between result_label and buttons
+	_review_vbox = VBoxContainer.new()
+	_review_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	$GameOverPanel/VBox.add_child(_review_vbox)
+	$GameOverPanel/VBox.move_child(_review_vbox, 1)
+
 func update_hud(player: CharacterBody2D, time_elapsed: float, kills: int = 0, damage: float = 0.0, stage_name: String = "") -> void:
 	health_bar.max_value = player.max_health
 	health_bar.value = player.health
@@ -88,26 +95,92 @@ func update_hud(player: CharacterBody2D, time_elapsed: float, kills: int = 0, da
 	if _dps_label != null and time_elapsed > 0.0:
 		_dps_label.text = "DPS: %d" % int(damage / time_elapsed)
 
-func show_game_over(time_elapsed: float, level_reached: int, kills: int = 0, damage: float = 0.0, weapon_names: Array = [], souls_earned: int = 0) -> void:
+func show_game_over(time_elapsed: float, player, kills: int = 0, damage: float = 0.0, souls_earned: int = 0) -> void:
 	game_over_panel.visible = true
-	var weapons_str := ", ".join(weapon_names) if not weapon_names.is_empty() else "None"
-	result_label.text = "GAME OVER\nTime: %02d:%02d\nLevel: %d\nKills: %d\nDamage: %d\nWeapons: %s\nSouls Earned: %d" % [
-		int(time_elapsed) / 60, int(time_elapsed) % 60,
-		level_reached, kills, int(damage), weapons_str, souls_earned
-	]
+	result_label.text = "GAME OVER"
+	result_label.modulate = Color(1.0, 0.35, 0.35, 1.0)
+	_build_review(player, time_elapsed, kills, damage, souls_earned)
 	char_select_button.text = "Cash Out Souls"
 	restart_button.grab_focus()
 
-func show_victory(time_elapsed: float, level_reached: int, kills: int = 0, damage: float = 0.0, weapon_names: Array = [], souls_earned: int = 0) -> void:
+func show_victory(time_elapsed: float, player, kills: int = 0, damage: float = 0.0, souls_earned: int = 0) -> void:
 	game_over_panel.visible = true
-	var weapons_str := ", ".join(weapon_names) if not weapon_names.is_empty() else "None"
-	result_label.text = "VICTORY!\nTime: %02d:%02d\nLevel: %d\nKills: %d\nDamage: %d\nWeapons: %s\nSouls Earned: %d" % [
-		int(time_elapsed) / 60, int(time_elapsed) % 60,
-		level_reached, kills, int(damage), weapons_str, souls_earned
-	]
+	result_label.text = "VICTORY!"
+	result_label.modulate = Color(0.35, 1.0, 0.5, 1.0)
+	_build_review(player, time_elapsed, kills, damage, souls_earned)
 	restart_button.text = "Play Again"
 	char_select_button.text = "Cash Out Souls"
 	char_select_button.grab_focus()
+
+func _build_review(player, time_elapsed: float, kills: int, damage: float, souls: int) -> void:
+	for child in _review_vbox.get_children():
+		_review_vbox.remove_child(child)
+		child.queue_free()
+
+	_add_sep()
+
+	_add_stat("Time",    "%02d:%02d" % [int(time_elapsed) / 60, int(time_elapsed) % 60])
+	_add_stat("Level",   str(player.level))
+	_add_stat("Kills",   str(kills))
+	_add_stat("Damage",  "%d" % int(damage))
+	if time_elapsed > 0.0:
+		_add_stat("Avg DPS", "%d" % int(damage / time_elapsed))
+
+	if not player.weapons.is_empty():
+		_add_sep()
+		_add_section("WEAPONS")
+		for w in player.weapons:
+			_add_item(w.weapon_name, "Lv.%d" % w.level, Color(1.0, 0.85, 0.4, 1.0))
+
+	var acquired: Array = player.passives.filter(func(p) -> bool: return p.is_acquired())
+	if not acquired.is_empty():
+		_add_sep()
+		_add_section("PASSIVES")
+		for p in acquired:
+			_add_item(p.weapon_name, "Lv.%d" % p.level, Color(0.6, 0.9, 1.0, 1.0))
+
+	_add_sep()
+	var souls_lbl := Label.new()
+	souls_lbl.text = "Souls Earned: +%d" % souls
+	souls_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	souls_lbl.modulate = Color(0.65, 0.65, 1.0, 1.0)
+	souls_lbl.add_theme_font_size_override("font_size", 14)
+	_review_vbox.add_child(souls_lbl)
+
+func _add_sep() -> void:
+	_review_vbox.add_child(HSeparator.new())
+
+func _add_section(text: String) -> void:
+	var lbl := Label.new()
+	lbl.text = text
+	lbl.modulate = Color(0.75, 0.75, 0.75, 1.0)
+	lbl.add_theme_font_size_override("font_size", 12)
+	_review_vbox.add_child(lbl)
+
+func _add_stat(label_text: String, value_text: String) -> void:
+	var row := HBoxContainer.new()
+	var lbl := Label.new()
+	lbl.text = label_text
+	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var val := Label.new()
+	val.text = value_text
+	val.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	row.add_child(lbl)
+	row.add_child(val)
+	_review_vbox.add_child(row)
+
+func _add_item(name_text: String, level_text: String, level_color: Color) -> void:
+	var row := HBoxContainer.new()
+	var lbl := Label.new()
+	lbl.text = "  " + name_text
+	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var lvl := Label.new()
+	lvl.text = level_text
+	lvl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	lvl.modulate = level_color
+	row.add_child(lbl)
+	row.add_child(lvl)
+	_review_vbox.add_child(row)
 
 func show_boss_warning() -> void:
 	boss_warning_label.visible = true

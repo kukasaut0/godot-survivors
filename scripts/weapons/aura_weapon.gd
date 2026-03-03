@@ -1,20 +1,21 @@
 extends WeaponBase
 class_name AuraWeapon
 
-var damage: float = 4.8
+var damage: float = 10.0
 var radius: float = 120.0
 var tick_interval: float = 0.5
+var knockback_force: float = 0.0
 var _tick_timer: float = 0.0
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Aura damages nearby enemies (dmg 6, radius 120, tick 0.5s)",
+	"Aura damages nearby enemies (dmg 10, radius 120, tick 0.5s)",
 	"Range: Radius 160",
-	"Power: Damage 10",
-	"Speed: Tick 0.35s",
+	"Power: Damage 16",
+	"Knockback: Push enemies outward",
 	"Range: Radius 200",
-	"Power: Damage 17",
+	"Power: Damage 24",
 	"Speed: Tick 0.25s",
-	"Max Power: Radius 260, Damage 24",
+	"Max Power: Radius 260, Damage 32",
 ]
 
 func _on_setup() -> void:
@@ -26,18 +27,18 @@ func _on_upgrade() -> void:
 		2:
 			radius = 160.0
 		3:
-			damage = 7.68
+			damage = 16.0
 		4:
-			tick_interval = 0.35
+			knockback_force = 280.0
 		5:
 			radius = 200.0
 		6:
-			damage = 13.44
+			damage = 24.0
 		7:
 			tick_interval = 0.25
 		8:
 			radius = 260.0
-			damage = 19.2
+			damage = 32.0
 	queue_redraw()
 
 func get_next_upgrade_description() -> String:
@@ -63,3 +64,6 @@ func _pulse() -> void:
 			continue
 		if _player.global_position.distance_squared_to(e.global_position) <= radius * radius:
 			e.take_damage(damage * dmg_mult)
+			if knockback_force > 0.0:
+				var push_dir := (e.global_position - _player.global_position).normalized()
+				e.apply_knockback(push_dir * knockback_force)

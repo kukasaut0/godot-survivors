@@ -18,6 +18,7 @@ var _reposition_threshold_sq: float = 0.0
 var _normal_modulate: Color = Color(1, 0.5, 0.2)
 var _sep_cache: Vector2 = Vector2.ZERO
 var _sep_frame: int = 0
+var _knockback_velocity: Vector2 = Vector2.ZERO
 
 # Behavior flags
 var _phase_through: bool = false
@@ -30,6 +31,7 @@ var _charge_active: float = 0.0
 var _charge_dir: Vector2 = Vector2.ZERO
 var _charge_recovering: float = 0.0
 
+const KNOCKBACK_DECAY: float = 8.0
 const DAMAGE_COOLDOWN: float = 1.0
 const SEP_RADIUS: float = 60.0
 const SEP_WEIGHT: float = 0.6
@@ -114,12 +116,19 @@ func _physics_process(delta: float) -> void:
 	else:
 		_sep_cache = Vector2.ZERO
 
+	# Decay knockback
+	if _knockback_velocity.length_squared() > 1.0:
+		_knockback_velocity = _knockback_velocity.move_toward(Vector2.ZERO, _knockback_velocity.length() * KNOCKBACK_DECAY * delta)
+	else:
+		_knockback_velocity = Vector2.ZERO
+
 	# Charge behavior
 	if _charges:
 		_process_charge(delta)
 	else:
 		var pursuit_dir := (_player.global_position - global_position).normalized()
 		velocity = (pursuit_dir + _sep_cache * SEP_WEIGHT).normalized() * speed
+	velocity += _knockback_velocity
 	move_and_slide()
 
 	_damage_timer -= delta
@@ -157,6 +166,9 @@ func _reposition() -> void:
 	var opposite_dir: Vector2 = (_player.global_position - global_position).normalized()
 	var dist: float = randf_range(400.0, 600.0)
 	global_position = _player.global_position + opposite_dir * dist
+
+func apply_knockback(impulse: Vector2) -> void:
+	_knockback_velocity = impulse
 
 func take_damage(amount: float) -> void:
 	var actual := minf(amount, health)

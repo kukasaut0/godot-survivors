@@ -329,8 +329,7 @@ func _on_run_complete() -> void:
 			GameState.set_unlock("stage_abyss_clear", true)
 	var souls_earned := int((int(time_elapsed / 60.0) * 10 + total_kills) * level_data.soul_multiplier)
 	GameState.add_souls(souls_earned)
-	var names: Array = player.weapons.map(func(w) -> String: return w.weapon_name)
-	hud.show_victory(time_elapsed, player.level, total_kills, total_damage_dealt, names, souls_earned)
+	hud.show_victory(time_elapsed, player, total_kills, total_damage_dealt, souls_earned)
 
 func _on_player_died() -> void:
 	is_game_over = true
@@ -338,8 +337,7 @@ func _on_player_died() -> void:
 	_check_persistent_unlocks()
 	var souls_earned := int((int(time_elapsed / 60.0) * 10 + total_kills) * level_data.soul_multiplier)
 	GameState.add_souls(souls_earned)
-	var names: Array = player.weapons.map(func(w) -> String: return w.weapon_name)
-	hud.show_game_over(time_elapsed, player.level, total_kills, total_damage_dealt, names, souls_earned)
+	hud.show_game_over(time_elapsed, player, total_kills, total_damage_dealt, souls_earned)
 
 func _check_persistent_unlocks() -> void:
 	# Speedster: Kill 500 enemies in a single run
@@ -354,40 +352,33 @@ func _check_persistent_unlocks() -> void:
 
 func _on_level_up(_lvl: int) -> void:
 	var upgrades: Array = []
-	var new_weapons: Array = []
 	var new_passives: Array = []
 
-	# Owned weapons that can be upgraded
+	# Owned weapons/passives that can be upgraded, plus evolutions
 	for w in player.weapons:
 		if w.can_upgrade():
 			upgrades.append(w)
-
-	# Owned passives that can be upgraded
 	for p in player.passives:
 		if p.can_upgrade() and p.is_acquired():
 			upgrades.append(p)
+	upgrades.append_array(_check_evolutions())
 
-	# Un-acquired passives as new options
+	# Unacquired passives
 	for p in player.passives:
 		if not p.is_acquired() and p.can_upgrade():
 			new_passives.append(p)
 
-	# Available evolutions
-	var evolutions := _check_evolutions()
-	upgrades.append_array(evolutions)
-
-	# Build options: 1 upgrade, 1 new weapon (if under cap), fill rest
 	upgrades.shuffle()
 	new_passives.shuffle()
 	_weapon_pool.shuffle()
 
 	var options: Array = []
 
-	# Slot 1: prioritize owned upgrade
+	# Slot 1: one random owned upgrade (weapon, passive, or evolution)
 	if not upgrades.is_empty():
 		options.append(upgrades.pop_back())
 
-	# Slot 2: offer new weapon from pool if under cap
+	# Slot 2: one random new weapon from the pool
 	if player.weapons.size() + _pending_new_weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
 		var wid: String = _weapon_pool[0]
 		var w := WeaponRegistry.create_weapon(wid)
@@ -395,19 +386,17 @@ func _on_level_up(_lvl: int) -> void:
 			w.setup(player, projectiles_container)
 			_weapon_pool.remove_at(0)
 			_pending_new_weapons.append(w)
-			new_weapons.append(w)
 			options.append(w)
 
-	# Slot 3: fill with remaining upgrades, new passives, or new weapons
+	# Slots 3 & 4: two random things — owned upgrades, new passives, or new weapons
 	var fill_pool: Array = upgrades + new_passives
 	fill_pool.shuffle()
-	while options.size() < 3 and not fill_pool.is_empty():
+	while options.size() < 4 and not fill_pool.is_empty():
 		var item = fill_pool.pop_back()
 		if item not in options:
 			options.append(item)
 
-	# If still need options and have weapons in pool
-	while options.size() < 3 and player.weapons.size() + _pending_new_weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
+	while options.size() < 4 and player.weapons.size() + _pending_new_weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
 		var wid: String = _weapon_pool[0]
 		var w := WeaponRegistry.create_weapon(wid)
 		if w != null:
