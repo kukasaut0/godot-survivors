@@ -31,10 +31,11 @@ var _boss_spawn_times: Array[float] = []
 var _boss_data: EnemyData = null
 
 # Weapon discovery pool
-const MAX_WEAPONS := 6
+const MAX_WEAPONS := 4
 const ALL_WEAPON_IDS: Array[String] = ["magic_bolt", "holy_onion", "thunder_strike", "knife_fan", "jump", "boomerang", "spike_strip"]
 var _weapon_pool: Array[String] = []
 var _pending_new_weapons: Array = []
+var _pending_weapon_ids: Dictionary = {}  # WeaponBase → weapon_id string
 
 # Combo system
 var _combo_count: int = 0
@@ -386,6 +387,7 @@ func _on_level_up(_lvl: int) -> void:
 			w.setup(player, projectiles_container)
 			_weapon_pool.remove_at(0)
 			_pending_new_weapons.append(w)
+			_pending_weapon_ids[w] = wid
 			options.append(w)
 
 	# Slots 3 & 4: two random things — owned upgrades, new passives, or new weapons
@@ -403,6 +405,7 @@ func _on_level_up(_lvl: int) -> void:
 			w.setup(player, projectiles_container)
 			_weapon_pool.remove_at(0)
 			_pending_new_weapons.append(w)
+			_pending_weapon_ids[w] = wid
 			options.append(w)
 
 	if options.is_empty():
@@ -450,13 +453,19 @@ func _check_evolutions() -> Array:
 	return result
 
 func _on_item_chosen(item) -> void:
-	if item is WeaponBase and item not in player.weapons:
+	var is_new_weapon: bool = item is WeaponBase and item not in player.weapons
+	if is_new_weapon:
 		player.add_weapon(item)
 		_pending_new_weapons.erase(item)
+		_pending_weapon_ids.erase(item)
 	for w in _pending_new_weapons:
+		if _pending_weapon_ids.has(w):
+			_weapon_pool.append(_pending_weapon_ids[w])
+			_pending_weapon_ids.erase(w)
 		w.queue_free()
 	_pending_new_weapons.clear()
-	item.upgrade()
+	if not is_new_weapon:
+		item.upgrade()
 	get_tree().paused = false
 
 func _unhandled_input(event: InputEvent) -> void:

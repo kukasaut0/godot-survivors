@@ -11,7 +11,13 @@ func show_options(options: Array) -> void:
 	var first_btn: Button = null
 	for item in options:
 		var btn := Button.new()
-		var prefix := "[LVL %d]" % item.level if item.is_acquired() else "[NEW]"
+		var prefix: String
+		if item is EvolutionOffer:
+			prefix = "[EVOLVE]"
+		elif item.is_acquired():
+			prefix = "[LVL %d]" % (item.level + 1)
+		else:
+			prefix = "[LVL 1]"
 		btn.text = "%s %s — %s" % [prefix, item.weapon_name, item.get_next_upgrade_description()]
 		btn.pressed.connect(_on_option_pressed.bind(item))
 		_options_container.add_child(btn)

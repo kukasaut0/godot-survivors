@@ -40,6 +40,7 @@ func apply_character_data(data: CharacterData) -> void:
 	$Sprite2D.scale = data.sprite_scale
 
 func add_weapon(w: WeaponBase) -> void:
+	w._in_player = true
 	weapons.append(w)
 	add_child(w)
 	w.setup(self, projectiles_container)

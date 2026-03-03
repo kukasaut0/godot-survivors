@@ -46,7 +46,7 @@ func _ready() -> void:
 	var vp_size := get_viewport().get_visible_rect().size
 	var camera := get_viewport().get_camera_2d()
 	var zoom_val: float = camera.zoom.x if camera != null else 1.0
-	var threshold: float = (vp_size / zoom_val).length() * 1.6
+	var threshold: float = (vp_size / zoom_val).length() * 1.2
 	_reposition_threshold_sq = threshold * threshold
 	_sep_frame = randi() % SEP_INTERVAL
 

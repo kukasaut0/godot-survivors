@@ -10,6 +10,7 @@ var level: int = 1
 
 var _player: Node2D = null
 var _projectiles_container: Node = null
+var _in_player: bool = false
 
 func setup(player: Node2D, proj_container: Node) -> void:
 	_player = player
@@ -34,7 +35,7 @@ func is_maxed() -> bool:
 	return level >= max_level
 
 func is_acquired() -> bool:
-	return level > 0
+	return _in_player
 
 func can_upgrade() -> bool:
 	return not is_maxed()

@@ -65,5 +65,5 @@ func _pulse() -> void:
 		if _player.global_position.distance_squared_to(e.global_position) <= radius * radius:
 			e.take_damage(damage * dmg_mult)
 			if knockback_force > 0.0:
-				var push_dir := (e.global_position - _player.global_position).normalized()
+				var push_dir: Vector2 = ((e as Node2D).global_position - _player.global_position).normalized()
 				e.apply_knockback(push_dir * knockback_force)
