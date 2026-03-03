@@ -41,9 +41,9 @@ jobs:
             | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url')
           curl -fsSL "$BUTLER_URL" -o butler.zip
           unzip butler.zip
-          chmod +x butler
+          chmod +x linux-amd64/butler
 
       - name: Push to itch.io
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
-        run: ./butler push build/web "kukasaut0/godot-survivors:html5"
+        run: ./linux-amd64/butler push build/web "kukasaut0/godot-survivors:html5"
