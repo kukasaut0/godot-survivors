@@ -35,13 +35,10 @@ jobs:
           mkdir -p build/web
           godot --headless --export-release "Web" build/web/index.html
 
-      - name: Install butler
-        run: |
-          wget -q "https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default" -O butler.zip
-          unzip -q butler.zip
-          chmod +x butler
-
       - name: Push to itch.io
+        uses: manleydev/butler-publish-itchio-action@master
         env:
-          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
-        run: ./butler push build/web "$ITCH_TARGET"
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
+          CHANNEL: html5
+          IFID: kukasaut0/godot-survivors
+          PACKAGE: build/web
