@@ -69,6 +69,11 @@ func _ready() -> void:
 	_health_drop_chance = level_data.health_drop_chance
 	RenderingServer.set_default_clear_color(level_data.background_color)
 
+	var grid := preload("res://scripts/world_grid.gd").new()
+	add_child(grid)
+	move_child(grid, 0)
+	grid.setup(camera, level_data.background_color)
+
 	# Build surge times
 	var t := SURGE_INTERVAL
 	while t < level_data.win_time - 30.0:
