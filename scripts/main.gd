@@ -32,7 +32,7 @@ var _boss_data: EnemyData = null
 
 # Weapon discovery pool
 const MAX_WEAPONS := 4
-const ALL_WEAPON_IDS: Array[String] = ["magic_bolt", "holy_onion", "thunder_strike", "knife_fan", "jump", "boomerang", "spike_strip"]
+const ALL_WEAPON_IDS: Array[String] = ["magic_bolt", "holy_onion", "thunder_strike", "knife_fan", "boomerang", "spike_strip"]
 var _weapon_pool: Array[String] = []
 var _pending_new_weapons: Array = []
 var _pending_weapon_ids: Dictionary = {}  # WeaponBase → weapon_id string
@@ -352,45 +352,63 @@ func _check_persistent_unlocks() -> void:
 		GameState.set_unlock("char_mage", true)
 
 func _on_level_up(_lvl: int) -> void:
-	var candidates: Array = []
-
-	# Owned weapons/passives that can be upgraded, plus evolutions
+	# --- Owned upgradeable weapons + evolutions (shuffled) ---
+	var owned_upgradeable: Array = []
 	for w in player.weapons:
 		if w.can_upgrade():
-			candidates.append(w)
-	for p in player.passives:
-		if p.can_upgrade() and p.is_acquired():
-			candidates.append(p)
-	candidates.append_array(_check_evolutions())
+			owned_upgradeable.append(w)
+	owned_upgradeable.append_array(_check_evolutions())
+	owned_upgradeable.append_array(_check_passive_evolutions())
+	owned_upgradeable.shuffle()
 
-	# Unacquired passives
-	for p in player.passives:
-		if not p.is_acquired() and p.can_upgrade():
-			candidates.append(p)
-
-	# Pre-create new weapons from the pool so they can appear in any slot
-	_weapon_pool.shuffle()
+	# --- New weapons from pool (up to 2) ---
 	var new_slots: int = MAX_WEAPONS - player.weapons.size() - _pending_new_weapons.size()
+	_weapon_pool.shuffle()
+	var new_weapons: Array = []
 	var pool_i := 0
-	while new_slots > 0 and pool_i < _weapon_pool.size():
+	while new_weapons.size() < 2 and new_slots > 0 and pool_i < _weapon_pool.size():
 		var wid: String = _weapon_pool[pool_i]
 		var w := WeaponRegistry.create_weapon(wid)
 		if w != null:
 			w.setup(player, projectiles_container)
 			_pending_new_weapons.append(w)
 			_pending_weapon_ids[w] = wid
-			candidates.append(w)
+			new_weapons.append(w)
 			new_slots -= 1
 		pool_i += 1
-	# Remove consumed IDs from the pool (unchosen ones are returned in _on_item_chosen)
+	# Remove IDs from pool now; unchosen ones are returned in _on_item_chosen
 	for w in _pending_new_weapons:
 		_weapon_pool.erase(_pending_weapon_ids[w])
 
-	if candidates.is_empty():
-		return
+	# --- Weapon slot 1: 60% existing upgrade, 40% new from pool ---
+	var weapon_options: Array = []
+	var slot1_is_existing := not owned_upgradeable.is_empty() and randf() < 0.6
+	if slot1_is_existing:
+		weapon_options.append(owned_upgradeable.pop_back())
+	elif not new_weapons.is_empty():
+		weapon_options.append(new_weapons.pop_back())
+	elif not owned_upgradeable.is_empty():
+		weapon_options.append(owned_upgradeable.pop_back())
 
-	candidates.shuffle()
-	var options: Array = candidates.slice(0, mini(3, candidates.size()))
+	# --- Weapon slot 2: random, equal chance between owned and new ---
+	var slot2_pool: Array = owned_upgradeable + new_weapons
+	slot2_pool.shuffle()
+	for w in slot2_pool:
+		if w not in weapon_options:
+			weapon_options.append(w)
+			break
+
+	# --- 2 passive slots ---
+	var passive_candidates: Array = []
+	for p in player.passives:
+		if p.can_upgrade():
+			passive_candidates.append(p)
+	passive_candidates.shuffle()
+	var passive_options: Array = passive_candidates.slice(0, mini(2, passive_candidates.size()))
+
+	var options: Array = weapon_options + passive_options
+	if options.is_empty():
+		return
 	get_tree().paused = true
 	weapon_select_ui.show_options(options)
 
@@ -419,16 +437,55 @@ func _check_evolutions() -> Array:
 			var already_evolved: bool = player.weapons.any(func(w) -> bool: return w is StormTempest)
 			if not already_evolved:
 				result.append(EvolutionOffer.new().init("Storm Tempest", "storm_tempest", ts, kf, player))
-	# CycloneDash: boomerang (Boomerang) + jump (Jump)
-	var has_boom := weapon_map.has(Boomerang)
-	var has_jump := weapon_map.has(Jump)
-	if has_boom and has_jump:
-		var boom: WeaponBase = weapon_map[Boomerang]
-		var jmp: WeaponBase = weapon_map[Jump]
-		if boom.is_maxed() and jmp.is_maxed():
-			var already_evolved: bool = player.weapons.any(func(w) -> bool: return w is CycloneDash)
-			if not already_evolved:
-				result.append(EvolutionOffer.new().init("Cyclone Dash", "cyclone_dash", boom, jmp, player))
+	return result
+
+func _check_passive_evolutions() -> Array:
+	var result: Array = []
+	var weapon_map: Dictionary = {}
+	for w in player.weapons:
+		weapon_map[w.get_script()] = w
+	# Build map of maxed passives by name
+	var passive_map: Dictionary = {}
+	for p in player.passives:
+		if p.is_maxed():
+			passive_map[p.weapon_name] = p
+
+	# Nova Bolt: magic_bolt (ProjectileWeapon) + Watch Shard
+	if weapon_map.has(ProjectileWeapon) and passive_map.has("Watch Shard"):
+		var w: WeaponBase = weapon_map[ProjectileWeapon]
+		if w.is_maxed() and not player.weapons.any(func(x) -> bool: return x is NovaBolt):
+			result.append(PassiveEvolutionOffer.new().init("Nova Bolt", "nova_bolt", w, passive_map["Watch Shard"], player))
+
+	# Sacred Mantle: holy_onion (AuraWeapon) + Heart Vessel
+	if weapon_map.has(AuraWeapon) and passive_map.has("Heart Vessel"):
+		var w: WeaponBase = weapon_map[AuraWeapon]
+		if w.is_maxed() and not player.weapons.any(func(x) -> bool: return x is SacredMantle):
+			result.append(PassiveEvolutionOffer.new().init("Sacred Mantle", "sacred_mantle", w, passive_map["Heart Vessel"], player))
+
+	# Thunderlord: thunder_strike (ThunderStrike) + Power Shard
+	if weapon_map.has(ThunderStrike) and passive_map.has("Power Shard"):
+		var w: WeaponBase = weapon_map[ThunderStrike]
+		if w.is_maxed() and not player.weapons.any(func(x) -> bool: return x is Thunderlord):
+			result.append(PassiveEvolutionOffer.new().init("Thunderlord", "thunderlord", w, passive_map["Power Shard"], player))
+
+	# Cyclone Blades: knife_fan (KnifeFan) + Boots
+	if weapon_map.has(KnifeFan) and passive_map.has("Boots"):
+		var w: WeaponBase = weapon_map[KnifeFan]
+		if w.is_maxed() and not player.weapons.any(func(x) -> bool: return x is CycloneBlades):
+			result.append(PassiveEvolutionOffer.new().init("Cyclone Blades", "cyclone_blades", w, passive_map["Boots"], player))
+
+	# Graviton Ring: boomerang (Boomerang) + Magnet
+	if weapon_map.has(Boomerang) and passive_map.has("Magnet"):
+		var w: WeaponBase = weapon_map[Boomerang]
+		if w.is_maxed() and not player.weapons.any(func(x) -> bool: return x is GravitonRing):
+			result.append(PassiveEvolutionOffer.new().init("Graviton Ring", "graviton_ring", w, passive_map["Magnet"], player))
+
+	# Toxic Fortress: spike_strip (SpikeStrip) + Iron Shield
+	if weapon_map.has(SpikeStrip) and passive_map.has("Iron Shield"):
+		var w: WeaponBase = weapon_map[SpikeStrip]
+		if w.is_maxed() and not player.weapons.any(func(x) -> bool: return x is ToxicFortress):
+			result.append(PassiveEvolutionOffer.new().init("Toxic Fortress", "toxic_fortress", w, passive_map["Iron Shield"], player))
+
 	return result
 
 func _on_item_chosen(item) -> void:

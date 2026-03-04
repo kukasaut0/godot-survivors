@@ -1,45 +1,37 @@
 extends WeaponBase
-class_name KnifeFan
+class_name CycloneBlades
 
-var damage: float = 16.0
-var projectile_count: int = 4
-var fire_interval: float = 2.0
+var damage: float = 40.0
+var knife_count: int = 20
+var fire_interval: float = 0.5
 var _timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Fires 4 knives in all directions (dmg 16, 2.0s)",
-	"Damage: 22",
-	"Count: 8 knives",
-	"Interval: 1.6s",
-	"Damage: 28",
-	"Count: 12 knives",
-	"Interval: 1.2s",
-	"Max: 16 knives, dmg 40",
+	"EVOLUTION: Continuous knife cyclone (20 knives, 40 dmg, 0.5s)",
+	"Count: 24 knives, Damage: 55",
+	"Count: 28 knives, Interval: 0.35s",
+	"Max: 32 knives, 80 dmg, 0.2s",
 ]
 
 func _on_setup() -> void:
-	weapon_name = "Knife Fan"
-	weapon_description = "Periodically fires knives in all directions."
+	weapon_name = "Cyclone Blades"
+	weapon_description = "Unleashes an unending cyclone of blades in all directions."
+	max_level = 4
 	_projectile_scene = load("res://scenes/projectile.tscn")
 
 func _on_upgrade() -> void:
 	match level:
 		2:
-			damage = 22.0
+			knife_count = 24
+			damage = 55.0
 		3:
-			projectile_count = 8
+			knife_count = 28
+			fire_interval = 0.35
 		4:
-			fire_interval = 1.6
-		5:
-			damage = 28.0
-		6:
-			projectile_count = 12
-		7:
-			fire_interval = 1.2
-		8:
-			projectile_count = 16
-			damage = 40.0
+			knife_count = 32
+			damage = 80.0
+			fire_interval = 0.2
 
 func get_next_upgrade_description() -> String:
 	var next := level + 1
@@ -57,8 +49,9 @@ func _fire_burst() -> void:
 	if _projectile_scene == null or _projectiles_container == null:
 		return
 	var dmg_mult: float = _player.damage_multiplier if "damage_multiplier" in _player else 1.0
-	for i in projectile_count:
-		var angle: float = (TAU / float(projectile_count)) * float(i)
+	var angle_offset: float = randf() * TAU
+	for i in knife_count:
+		var angle: float = angle_offset + (TAU / float(knife_count)) * float(i)
 		var proj: Area2D = _projectile_scene.instantiate()
 		proj.damage = damage * dmg_mult
 		proj.direction = Vector2(cos(angle), sin(angle))

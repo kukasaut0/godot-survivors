@@ -1,45 +1,37 @@
 extends WeaponBase
-class_name KnifeFan
+class_name NovaBolt
 
-var damage: float = 16.0
-var projectile_count: int = 4
-var fire_interval: float = 2.0
+var damage: float = 40.0
+var bolt_count: int = 8
+var fire_interval: float = 0.35
 var _timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Fires 4 knives in all directions (dmg 16, 2.0s)",
-	"Damage: 22",
-	"Count: 8 knives",
-	"Interval: 1.6s",
-	"Damage: 28",
-	"Count: 12 knives",
-	"Interval: 1.2s",
-	"Max: 16 knives, dmg 40",
+	"EVOLUTION: Rapid bolts in all directions (8 bolts, 40 dmg, 0.35s)",
+	"Count: 12 bolts, Damage: 56",
+	"Count: 16 bolts, Interval: 0.22s",
+	"Max: 24 bolts, 80 dmg, 0.14s",
 ]
 
 func _on_setup() -> void:
-	weapon_name = "Knife Fan"
-	weapon_description = "Periodically fires knives in all directions."
+	weapon_name = "Nova Bolt"
+	weapon_description = "Fires a rapid barrage of bolts in all directions."
+	max_level = 4
 	_projectile_scene = load("res://scenes/projectile.tscn")
 
 func _on_upgrade() -> void:
 	match level:
 		2:
-			damage = 22.0
+			bolt_count = 12
+			damage = 56.0
 		3:
-			projectile_count = 8
+			bolt_count = 16
+			fire_interval = 0.22
 		4:
-			fire_interval = 1.6
-		5:
-			damage = 28.0
-		6:
-			projectile_count = 12
-		7:
-			fire_interval = 1.2
-		8:
-			projectile_count = 16
-			damage = 40.0
+			bolt_count = 24
+			damage = 80.0
+			fire_interval = 0.14
 
 func get_next_upgrade_description() -> String:
 	var next := level + 1
@@ -57,8 +49,8 @@ func _fire_burst() -> void:
 	if _projectile_scene == null or _projectiles_container == null:
 		return
 	var dmg_mult: float = _player.damage_multiplier if "damage_multiplier" in _player else 1.0
-	for i in projectile_count:
-		var angle: float = (TAU / float(projectile_count)) * float(i)
+	for i in bolt_count:
+		var angle: float = (TAU / float(bolt_count)) * float(i)
 		var proj: Area2D = _projectile_scene.instantiate()
 		proj.damage = damage * dmg_mult
 		proj.direction = Vector2(cos(angle), sin(angle))

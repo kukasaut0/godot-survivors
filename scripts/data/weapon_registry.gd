@@ -10,8 +10,6 @@ func create_weapon(weapon_id: String) -> WeaponBase:
 			return ThunderStrike.new()
 		"knife_fan":
 			return KnifeFan.new()
-		"jump":
-			return Jump.new()
 		"boomerang":
 			return Boomerang.new()
 		"spike_strip":
@@ -22,5 +20,17 @@ func create_weapon(weapon_id: String) -> WeaponBase:
 			return StormTempest.new()
 		"cyclone_dash":
 			return CycloneDash.new()
+		"nova_bolt":
+			return NovaBolt.new()
+		"sacred_mantle":
+			return SacredMantle.new()
+		"thunderlord":
+			return Thunderlord.new()
+		"cyclone_blades":
+			return CycloneBlades.new()
+		"graviton_ring":
+			return GravitonRing.new()
+		"toxic_fortress":
+			return ToxicFortress.new()
 	push_warning("WeaponRegistry: unknown weapon_id '%s'" % weapon_id)
 	return null
