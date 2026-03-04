@@ -7,22 +7,26 @@ process_mode = 3
 script = ExtResource("1_hud")
 
 [node name="Panel" type="Panel" parent="."]
-offset_right = 400.0
-offset_bottom = 70.0
+offset_right = 560.0
+offset_bottom = 130.0
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 392.0
-offset_bottom = 62.0
+offset_right = 552.0
+offset_bottom = 122.0
+
+[node name="WeaponsLabel" type="Label" parent="Panel/VBox"]
+text = ""
+add_theme_font_size_override/font_size = 16
 
 [node name="HealthBar" type="ProgressBar" parent="Panel/VBox"]
-custom_minimum_size = Vector2(380, 18)
+custom_minimum_size = Vector2(536, 26)
 max_value = 100.0
 value = 100.0
 
 [node name="XPBar" type="ProgressBar" parent="Panel/VBox"]
-custom_minimum_size = Vector2(380, 12)
+custom_minimum_size = Vector2(536, 16)
 max_value = 100.0
 value = 0.0
 modulate = Color(0, 1, 0.2, 1)
@@ -31,12 +35,15 @@ modulate = Color(0, 1, 0.2, 1)
 
 [node name="LevelLabel" type="Label" parent="Panel/VBox/InfoRow"]
 text = "LVL 1"
+add_theme_font_size_override/font_size = 22
 
 [node name="TimeLabel" type="Label" parent="Panel/VBox/InfoRow"]
 text = "00:00"
+add_theme_font_size_override/font_size = 22
 
 [node name="KillLabel" type="Label" parent="Panel/VBox/InfoRow"]
 text = "  K:0"
+add_theme_font_size_override/font_size = 22
 
 [node name="GameOverPanel" type="Panel" parent="."]
 visible = false
@@ -44,10 +51,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -230.0
-offset_top = -300.0
-offset_right = 230.0
-offset_bottom = 300.0
+offset_left = -280.0
+offset_top = -340.0
+offset_right = 280.0
+offset_bottom = 340.0
 
 [node name="VBox" type="VBoxContainer" parent="GameOverPanel"]
 anchor_right = 1.0
@@ -60,13 +67,15 @@ offset_bottom = -14.0
 [node name="ResultLabel" type="Label" parent="GameOverPanel/VBox"]
 text = "GAME OVER"
 horizontal_alignment = 1
-add_theme_font_size_override/font_size = 22
+add_theme_font_size_override/font_size = 32
 
 [node name="RestartButton" type="Button" parent="GameOverPanel/VBox"]
 text = "Restart"
+add_theme_font_size_override/font_size = 20
 
 [node name="CharSelectButton" type="Button" parent="GameOverPanel/VBox"]
 text = "Character Select"
+add_theme_font_size_override/font_size = 20
 
 [node name="BossWarningLabel" type="Label" parent="."]
 visible = false
@@ -82,4 +91,4 @@ grow_horizontal = 2
 text = "!!! BOSS INCOMING !!!"
 horizontal_alignment = 1
 add_theme_color_override/font_color = Color(1, 0.2, 0.2, 1)
-add_theme_font_size_override/font_size = 24
+add_theme_font_size_override/font_size = 36

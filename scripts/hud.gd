@@ -5,6 +5,7 @@ extends CanvasLayer
 @onready var level_label: Label = $Panel/VBox/InfoRow/LevelLabel
 @onready var time_label: Label = $Panel/VBox/InfoRow/TimeLabel
 @onready var kill_label: Label = $Panel/VBox/InfoRow/KillLabel
+@onready var _weapons_label: Label = $Panel/VBox/WeaponsLabel
 @onready var game_over_panel: Panel = $GameOverPanel
 @onready var result_label: Label = $GameOverPanel/VBox/ResultLabel
 @onready var restart_button: Button = $GameOverPanel/VBox/RestartButton
@@ -94,6 +95,16 @@ func update_hud(player: CharacterBody2D, time_elapsed: float, kills: int = 0, da
 		_stage_label.text = stage_name
 	if _dps_label != null and time_elapsed > 0.0:
 		_dps_label.text = "DPS: %d" % int(damage / time_elapsed)
+	if _weapons_label != null:
+		var parts: Array[String] = []
+		if "weapons" in player:
+			for w in player.weapons:
+				parts.append("%s Lv%d" % [w.weapon_name, w.level])
+		if "passives" in player:
+			for p in player.passives:
+				if p.is_acquired():
+					parts.append("%s Lv%d" % [p.weapon_name, p.level])
+		_weapons_label.text = "  |  ".join(parts)
 
 func show_game_over(time_elapsed: float, player, kills: int = 0, damage: float = 0.0, souls_earned: int = 0) -> void:
 	game_over_panel.visible = true

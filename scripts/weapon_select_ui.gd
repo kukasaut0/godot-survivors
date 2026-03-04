@@ -19,6 +19,7 @@ func show_options(options: Array) -> void:
 		else:
 			prefix = "[LVL 1]"
 		btn.text = "%s %s — %s" % [prefix, item.weapon_name, item.get_next_upgrade_description()]
+		btn.add_theme_font_size_override("font_size", 20)
 		btn.pressed.connect(_on_option_pressed.bind(item))
 		_options_container.add_child(btn)
 		if first_btn == null:

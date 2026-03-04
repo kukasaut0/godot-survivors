@@ -49,7 +49,7 @@ const SURGE_DURATION: float = 10.0
 const SURGE_INTERVAL: float = 180.0
 
 # Health drop chance (modified by meta upgrades)
-var _health_drop_chance: float = 0.05
+var _health_drop_chance: float = 0.01
 var _elite_chance: float = 0.10
 
 func _ready() -> void:
@@ -212,7 +212,7 @@ func _spawn_enemy() -> void:
 	enemies_container.add_child(enemy)
 	enemy.global_position = player.global_position + Vector2(cos(angle), sin(angle)) * dist
 	enemy.setup(player)
-	enemy.apply_enemy_data(_pick_enemy_data(), time_elapsed)
+	enemy.apply_enemy_data(_pick_enemy_data(), time_elapsed, player.level)
 	if randf() < _elite_chance:
 		enemy.make_elite()
 	enemy.died_at.connect(_on_enemy_died_at)
@@ -352,66 +352,45 @@ func _check_persistent_unlocks() -> void:
 		GameState.set_unlock("char_mage", true)
 
 func _on_level_up(_lvl: int) -> void:
-	var upgrades: Array = []
-	var new_passives: Array = []
+	var candidates: Array = []
 
 	# Owned weapons/passives that can be upgraded, plus evolutions
 	for w in player.weapons:
 		if w.can_upgrade():
-			upgrades.append(w)
+			candidates.append(w)
 	for p in player.passives:
 		if p.can_upgrade() and p.is_acquired():
-			upgrades.append(p)
-	upgrades.append_array(_check_evolutions())
+			candidates.append(p)
+	candidates.append_array(_check_evolutions())
 
 	# Unacquired passives
 	for p in player.passives:
 		if not p.is_acquired() and p.can_upgrade():
-			new_passives.append(p)
+			candidates.append(p)
 
-	upgrades.shuffle()
-	new_passives.shuffle()
+	# Pre-create new weapons from the pool so they can appear in any slot
 	_weapon_pool.shuffle()
-
-	var options: Array = []
-
-	# Slot 1: one random owned upgrade (weapon, passive, or evolution)
-	if not upgrades.is_empty():
-		options.append(upgrades.pop_back())
-
-	# Slot 2: one random new weapon from the pool
-	if player.weapons.size() + _pending_new_weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
-		var wid: String = _weapon_pool[0]
+	var new_slots: int = MAX_WEAPONS - player.weapons.size() - _pending_new_weapons.size()
+	var pool_i := 0
+	while new_slots > 0 and pool_i < _weapon_pool.size():
+		var wid: String = _weapon_pool[pool_i]
 		var w := WeaponRegistry.create_weapon(wid)
 		if w != null:
 			w.setup(player, projectiles_container)
-			_weapon_pool.remove_at(0)
 			_pending_new_weapons.append(w)
 			_pending_weapon_ids[w] = wid
-			options.append(w)
+			candidates.append(w)
+			new_slots -= 1
+		pool_i += 1
+	# Remove consumed IDs from the pool (unchosen ones are returned in _on_item_chosen)
+	for w in _pending_new_weapons:
+		_weapon_pool.erase(_pending_weapon_ids[w])
 
-	# Slots 3 & 4: two random things — owned upgrades, new passives, or new weapons
-	var fill_pool: Array = upgrades + new_passives
-	fill_pool.shuffle()
-	while options.size() < 4 and not fill_pool.is_empty():
-		var item = fill_pool.pop_back()
-		if item not in options:
-			options.append(item)
-
-	while options.size() < 4 and player.weapons.size() + _pending_new_weapons.size() < MAX_WEAPONS and not _weapon_pool.is_empty():
-		var wid: String = _weapon_pool[0]
-		var w := WeaponRegistry.create_weapon(wid)
-		if w != null:
-			w.setup(player, projectiles_container)
-			_weapon_pool.remove_at(0)
-			_pending_new_weapons.append(w)
-			_pending_weapon_ids[w] = wid
-			options.append(w)
-
-	if options.is_empty():
+	if candidates.is_empty():
 		return
 
-	options.shuffle()
+	candidates.shuffle()
+	var options: Array = candidates.slice(0, mini(3, candidates.size()))
 	get_tree().paused = true
 	weapon_select_ui.show_options(options)
 

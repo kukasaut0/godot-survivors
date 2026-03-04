@@ -158,6 +158,6 @@ win_time = 900.0
 boss_spawn_times = Array[float]([300.0, 600.0, 850.0])
 boss_data_path = "res://data/enemies/boss_crypt.tres"
 elite_chance = 0.12
-health_drop_chance = 0.05
+health_drop_chance = 0.01
 background_color = Color(0.08, 0.03, 0.12, 1)
 soul_multiplier = 1.5

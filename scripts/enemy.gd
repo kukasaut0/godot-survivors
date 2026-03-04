@@ -14,7 +14,9 @@ var contact_dist: float = 30.0
 var _player: Node2D = null
 var _damage_timer: float = 0.0
 var _flash_timer: float = 0.0
-var _reposition_threshold_sq: float = 0.0
+var _max_health: float = 1.0
+var _half_screen: Vector2 = Vector2.ZERO
+var _has_entered_screen: bool = false
 var _normal_modulate: Color = Color(1, 0.5, 0.2)
 var _sep_cache: Vector2 = Vector2.ZERO
 var _sep_frame: int = 0
@@ -46,8 +48,7 @@ func _ready() -> void:
 	var vp_size := get_viewport().get_visible_rect().size
 	var camera := get_viewport().get_camera_2d()
 	var zoom_val: float = camera.zoom.x if camera != null else 1.0
-	var threshold: float = (vp_size / zoom_val).length() * 1.2
-	_reposition_threshold_sq = threshold * threshold
+	_half_screen = vp_size / (2.0 * zoom_val)
 	_sep_frame = randi() % SEP_INTERVAL
 
 func _exit_tree() -> void:
@@ -56,9 +57,10 @@ func _exit_tree() -> void:
 func setup(player_ref: Node2D) -> void:
 	_player = player_ref
 
-func apply_enemy_data(data: EnemyData, time_elapsed: float) -> void:
+func apply_enemy_data(data: EnemyData, time_elapsed: float, player_level: int = 1) -> void:
 	speed = data.base_speed + time_elapsed * data.speed_time_scale
-	health = data.health
+	health = data.health * (1.0 + (player_level - 1) * 0.05)
+	_max_health = health
 	damage = data.damage
 	xp_value = data.xp_value
 	contact_dist = data.contact_dist
@@ -73,6 +75,7 @@ func apply_enemy_data(data: EnemyData, time_elapsed: float) -> void:
 
 func make_elite() -> void:
 	health *= 3.0
+	_max_health *= 3.0
 	speed *= 1.5
 	damage *= 1.5
 	xp_value *= 3
@@ -93,6 +96,16 @@ func _compute_separation() -> Vector2:
 		if dist < SEP_RADIUS and dist > 0.001:
 			sep += diff / dist * (1.0 - dist / SEP_RADIUS)
 	return sep
+
+func _draw() -> void:
+	var ratio: float = clampf(health / _max_health, 0.0, 1.0)
+	const W: float = 38.0
+	const H: float = 4.0
+	const Y: float = -34.0
+	draw_rect(Rect2(-W * 0.5, Y, W, H), Color(0.15, 0.0, 0.0, 0.85))
+	if ratio > 0.0:
+		var fill: Color = Color(1.0 - ratio, ratio * 0.85, 0.0, 1.0)
+		draw_rect(Rect2(-W * 0.5, Y, W * ratio, H), fill)
 
 func _apply_visuals(color: Color, sprite_scale: Vector2, collision_scale: Vector2) -> void:
 	_normal_modulate = color
@@ -135,7 +148,12 @@ func _physics_process(delta: float) -> void:
 	if _damage_timer <= 0.0 and global_position.distance_squared_to(_player.global_position) < contact_dist * contact_dist:
 		_player.take_damage(damage * 3.0)
 		_damage_timer = DAMAGE_COOLDOWN
-	if global_position.distance_squared_to(_player.global_position) > _reposition_threshold_sq:
+	var rel: Vector2 = global_position - _player.global_position
+	var on_screen: bool = abs(rel.x) <= _half_screen.x and abs(rel.y) <= _half_screen.y
+	if not _has_entered_screen:
+		if on_screen:
+			_has_entered_screen = true
+	elif not on_screen:
 		_reposition()
 
 func _process_charge(delta: float) -> void:
@@ -163,9 +181,12 @@ func _process_charge(delta: float) -> void:
 			_flash_timer = _charge_duration
 
 func _reposition() -> void:
-	var opposite_dir: Vector2 = (_player.global_position - global_position).normalized()
-	var dist: float = randf_range(400.0, 600.0)
-	global_position = _player.global_position + opposite_dir * dist
+	var rel: Vector2 = global_position - _player.global_position
+	# Place just off the opposite screen edge so the enemy walks back in
+	var opposite: Vector2 = -rel.normalized()
+	var dist: float = _half_screen.length() * randf_range(1.05, 1.15)
+	global_position = _player.global_position + opposite * dist
+	_has_entered_screen = false
 
 func apply_knockback(impulse: Vector2) -> void:
 	_knockback_velocity = impulse
@@ -175,6 +196,7 @@ func take_damage(amount: float) -> void:
 	damage_taken.emit(actual)
 	health -= amount
 	$Sprite2D.modulate = Color(1.0, 0.4, 0.4)
+	queue_redraw()
 	if health <= 0.0:
 		died_at.emit(global_position, xp_value)
 		queue_free()

@@ -1,8 +1,11 @@
 extends Area2D
 
 var xp_value: int = 10
-var magnet_speed: float = 350.0
 var _player: Node2D = null
+var _current_speed: float = 0.0
+
+const MAGNET_ACCELERATION: float = 700.0
+const MAX_MAGNET_SPEED: float = 1000.0
 
 func setup(value: int, player_ref: Node2D) -> void:
 	xp_value = value
@@ -18,5 +21,8 @@ func _process(delta: float) -> void:
 		_player.collect_xp(xp_value * 2)
 		queue_free()
 	elif dist_sq <= magnet_radius * magnet_radius:
+		_current_speed = minf(_current_speed + MAGNET_ACCELERATION * delta, MAX_MAGNET_SPEED)
 		var dir := (_player.global_position - global_position).normalized()
-		global_position += dir * magnet_speed * delta
+		global_position += dir * _current_speed * delta
+	else:
+		_current_speed = 0.0
