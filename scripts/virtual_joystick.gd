@@ -13,7 +13,8 @@ var _center: Vector2 = Vector2.ZERO
 var _knob_offset: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
-	# Cover the full screen so we can intercept left-half touches
+	# Must process input even when game is paused (level-up UI) so touch release is never missed
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
