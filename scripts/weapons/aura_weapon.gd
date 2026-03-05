@@ -42,10 +42,9 @@ func _on_upgrade() -> void:
 	queue_redraw()
 
 func get_next_upgrade_description() -> String:
-	var next := level + 1
-	if next > max_level:
+	if is_maxed():
 		return "Maxed out!"
-	return UPGRADE_DESCRIPTIONS[next - 1]
+	return UPGRADE_DESCRIPTIONS[_desc_index()]
 
 func _draw() -> void:
 	draw_circle(Vector2.ZERO, radius, Color(0.3, 1, 0.3, 0.07))

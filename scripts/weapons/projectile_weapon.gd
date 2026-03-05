@@ -42,10 +42,9 @@ func _on_upgrade() -> void:
 			projectile_count = 4
 
 func get_next_upgrade_description() -> String:
-	var next := level + 1
-	if next > max_level:
+	if is_maxed():
 		return "Maxed out!"
-	return UPGRADE_DESCRIPTIONS[next - 1]
+	return UPGRADE_DESCRIPTIONS[_desc_index()]
 
 func _physics_process(delta: float) -> void:
 	_shoot_timer -= delta

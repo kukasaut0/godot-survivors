@@ -31,6 +31,11 @@ func _on_upgrade() -> void:
 func get_next_upgrade_description() -> String:
 	return ""
 
+# Index into UPGRADE_DESCRIPTIONS: unacquired weapons show their L1 description (level-1),
+# owned weapons show what the next upgrade gives (level).
+func _desc_index() -> int:
+	return level if _in_player else (level - 1)
+
 func is_maxed() -> bool:
 	return level >= max_level
 

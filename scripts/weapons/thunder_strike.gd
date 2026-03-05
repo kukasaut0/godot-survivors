@@ -45,10 +45,9 @@ func _on_upgrade() -> void:
 			strike_interval = 1.0
 
 func get_next_upgrade_description() -> String:
-	var next := level + 1
-	if next > max_level:
+	if is_maxed():
 		return "Maxed out!"
-	return UPGRADE_DESCRIPTIONS[next - 1]
+	return UPGRADE_DESCRIPTIONS[_desc_index()]
 
 func _draw() -> void:
 	for pos in _lightning_targets:
