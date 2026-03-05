@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name CycloneBlades
 
-var damage: float = 40.0
+var damage: float = 44.0
 var knife_count: int = 20
 var fire_interval: float = 0.5
 var _timer: float = 0.0
@@ -24,13 +24,13 @@ func _on_upgrade() -> void:
 	match level:
 		2:
 			knife_count = 24
-			damage = 55.0
+			damage = 60.5
 		3:
 			knife_count = 28
 			fire_interval = 0.35
 		4:
 			knife_count = 32
-			damage = 80.0
+			damage = 88.0
 			fire_interval = 0.2
 
 func get_next_upgrade_description() -> String:

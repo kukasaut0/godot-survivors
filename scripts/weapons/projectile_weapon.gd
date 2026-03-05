@@ -1,9 +1,10 @@
 extends WeaponBase
 class_name ProjectileWeapon
 
-var damage: float = 14.4
+var damage: float = 15.84
 var shoot_cooldown: float = 0.96
 var projectile_count: int = 1
+var projectile_range: float = 300.0
 var _shoot_timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
@@ -27,19 +28,26 @@ func _on_upgrade() -> void:
 	match level:
 		2:
 			shoot_cooldown *= 0.8
+			projectile_range = 360.0
 		3:
 			projectile_count = 2
+			projectile_range = 420.0
 		4:
 			damage *= 1.3
+			projectile_range = 500.0
 		5:
 			shoot_cooldown *= 0.75
+			projectile_range = 580.0
 		6:
 			projectile_count = 3
+			projectile_range = 660.0
 		7:
 			damage *= 1.4
+			projectile_range = 750.0
 		8:
 			shoot_cooldown *= 0.7
 			projectile_count = 4
+			projectile_range = 850.0
 
 func get_next_upgrade_description() -> String:
 	if is_maxed():
@@ -74,5 +82,6 @@ func _spawn_projectile(direction: Vector2) -> void:
 	var dmg_mult: float = _player.damage_multiplier if "damage_multiplier" in _player else 1.0
 	proj.damage = damage * dmg_mult
 	proj.direction = direction
+	proj.max_range = projectile_range
 	proj.global_position = _player.global_position
 	_projectiles_container.add_child(proj)

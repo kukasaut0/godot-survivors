@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name ToxicFortress
 
-var damage_per_tick: float = 40.0
+var damage_per_tick: float = 44.0
 var zone_radius: float = 120.0
 var zone_duration: float = 10.0
 var drop_cooldown: float = 1.5
@@ -25,14 +25,14 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			damage_per_tick = 55.0
+			damage_per_tick = 60.5
 			max_zones = 7
 		3:
 			zone_radius = 150.0
 			drop_cooldown = 1.2
-			damage_per_tick = 75.0
+			damage_per_tick = 82.5
 		4:
-			damage_per_tick = 100.0
+			damage_per_tick = 110.0
 			zone_radius = 190.0
 			drop_cooldown = 0.8
 			tick_interval = 0.25

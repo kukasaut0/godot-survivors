@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name SpikeStrip
 
-var damage_per_tick: float = 10.0
+var damage_per_tick: float = 11.0
 var zone_radius: float = 80.0
 var zone_duration: float = 4.0
 var drop_cooldown: float = 2.0
@@ -29,25 +29,25 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			damage_per_tick = 14.0
+			damage_per_tick = 15.4
 			max_zones = 4
 		3:
 			zone_radius = 100.0
 			drop_cooldown = 1.6
 		4:
 			zone_duration = 5.5
-			damage_per_tick = 18.0
+			damage_per_tick = 19.8
 		5:
 			max_zones = 5
 			zone_radius = 115.0
 		6:
 			drop_cooldown = 1.3
-			damage_per_tick = 24.0
+			damage_per_tick = 26.4
 		7:
 			zone_duration = 6.5
 			max_zones = 6
 		8:
-			damage_per_tick = 32.0
+			damage_per_tick = 35.2
 			zone_radius = 130.0
 			zone_duration = 8.0
 			drop_cooldown = 1.0

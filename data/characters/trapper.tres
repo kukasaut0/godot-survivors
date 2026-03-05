@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/weapon_entry.gd" id="2"]
+
+[sub_resource type="Resource" id="w1"]
+script = ExtResource("2")
+weapon_id = "spike_strip"
+starting_level = 1
+
+[resource]
+script = ExtResource("1")
+id = "trapper"
+display_name = "Trapper"
+speed = 240.0
+max_health = 130.0
+health_per_level = 28.0
+modulate_color = Color(0.85, 0.45, 0.1, 1)
+sprite_scale = Vector2(0.5, 0.5)
+starting_weapons = Array[Resource]([SubResource("w1")])

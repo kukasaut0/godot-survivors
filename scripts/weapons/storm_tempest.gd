@@ -1,10 +1,10 @@
 extends WeaponBase
 class_name StormTempest
 
-var thunder_damage: float = 76.8
+var thunder_damage: float = 84.5
 var thunder_targets: int = 8
 var thunder_interval: float = 0.8
-var knife_damage: float = 24.0
+var knife_damage: float = 26.4
 var knife_count: int = 20
 var knife_interval: float = 1.0
 
@@ -29,14 +29,14 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			thunder_damage = 105.6
-			knife_damage = 33.6
+			thunder_damage = 116.2
+			knife_damage = 37.0
 		3:
 			thunder_targets = 10
 			knife_count = 28
 		4:
-			thunder_damage = 144.0
-			knife_damage = 48.0
+			thunder_damage = 158.4
+			knife_damage = 52.8
 			thunder_interval = 0.6
 			knife_interval = 0.8
 	queue_redraw()

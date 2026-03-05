@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name Boomerang
 
-var damage: float = 18.0
+var damage: float = 19.8
 var orbit_radius: float = 100.0
 var orbit_speed: float = 3.0
 var blade_count: int = 1
@@ -31,13 +31,13 @@ func _on_upgrade() -> void:
 		2:
 			blade_count = 2
 		3:
-			damage = 27.0
+			damage = 29.7
 			orbit_radius = 120.0
 		4:
 			orbit_speed = 4.0
 		5:
 			blade_count = 3
-			damage = 36.0
+			damage = 39.6
 		6:
 			orbit_radius = 150.0
 		7:
@@ -45,7 +45,7 @@ func _on_upgrade() -> void:
 			orbit_speed = 4.5
 		8:
 			blade_count = 5
-			damage = 54.0
+			damage = 59.4
 			orbit_radius = 180.0
 			orbit_speed = 5.0
 	queue_redraw()

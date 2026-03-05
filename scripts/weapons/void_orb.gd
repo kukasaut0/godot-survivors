@@ -1,10 +1,10 @@
 extends WeaponBase
 class_name VoidOrb
 
-var bolt_damage: float = 24.0
+var bolt_damage: float = 26.4
 var bolt_count: int = 4
 var bolt_cooldown: float = 0.4
-var aura_damage: float = 14.4
+var aura_damage: float = 15.84
 var aura_radius: float = 200.0
 var aura_tick: float = 0.4
 
@@ -28,14 +28,14 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			bolt_damage = 33.6
-			aura_damage = 21.12
+			bolt_damage = 37.0
+			aura_damage = 23.2
 		3:
 			aura_radius = 260.0
 			bolt_count = 6
 		4:
-			bolt_damage = 48.0
-			aura_damage = 28.8
+			bolt_damage = 52.8
+			aura_damage = 31.7
 			aura_tick = 0.3
 	queue_redraw()
 

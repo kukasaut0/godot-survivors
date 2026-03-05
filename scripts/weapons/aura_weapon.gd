@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name AuraWeapon
 
-var damage: float = 10.0
+var damage: float = 5.0
 var radius: float = 120.0
 var tick_interval: float = 0.5
 var knockback_force: float = 0.0
@@ -27,18 +27,18 @@ func _on_upgrade() -> void:
 		2:
 			radius = 160.0
 		3:
-			damage = 16.0
+			damage = 8.0
 		4:
-			knockback_force = 280.0
+			knockback_force = 140.0
 		5:
 			radius = 200.0
 		6:
-			damage = 24.0
+			damage = 12.0
 		7:
 			tick_interval = 0.25
 		8:
 			radius = 260.0
-			damage = 32.0
+			damage = 16.0
 	queue_redraw()
 
 func get_next_upgrade_description() -> String:

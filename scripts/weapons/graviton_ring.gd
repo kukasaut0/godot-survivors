@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name GravitonRing
 
-var damage: float = 50.0
+var damage: float = 55.0
 var orbit_radius: float = 180.0
 var orbit_speed: float = 3.5
 var blade_count: int = 4
@@ -29,17 +29,17 @@ func _on_upgrade() -> void:
 	match level:
 		2:
 			blade_count = 5
-			damage = 70.0
+			damage = 77.0
 			pull_force = 220.0
 		3:
 			blade_count = 6
-			damage = 95.0
+			damage = 104.5
 			orbit_radius = 220.0
 			pull_radius = 350.0
 			pull_force = 300.0
 		4:
 			blade_count = 8
-			damage = 130.0
+			damage = 143.0
 			orbit_radius = 270.0
 			pull_radius = 440.0
 			pull_force = 420.0

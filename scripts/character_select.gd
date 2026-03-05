@@ -5,6 +5,7 @@ const CHARACTER_FILES: Array[String] = [
 	"res://data/characters/speeder_hero.tres",
 	"res://data/characters/tank_hero.tres",
 	"res://data/characters/mage.tres",
+	"res://data/characters/trapper.tres",
 ]
 
 const CHARACTER_UNLOCK_KEYS: Array[String] = [
@@ -12,6 +13,7 @@ const CHARACTER_UNLOCK_KEYS: Array[String] = [
 	"char_speeder_hero",
 	"char_tank_hero",
 	"char_mage",
+	"char_trapper",
 ]
 
 const CHARACTER_UNLOCK_HINTS: Array[String] = [
@@ -19,6 +21,7 @@ const CHARACTER_UNLOCK_HINTS: Array[String] = [
 	"LOCKED\nKill 500 enemies\nin a single run",
 	"LOCKED\nSurvive 10 minutes",
 	"LOCKED\nReach level 20\nin a single run",
+	"LOCKED\nKill 200 enemies\nin a single run",
 ]
 
 const LEVEL_FILES: Array[String] = [

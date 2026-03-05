@@ -180,7 +180,7 @@ func _process(delta: float) -> void:
 	# Non-linear spawn scaling
 	var spawn_interval := _compute_spawn_interval()
 	if _surge_active > 0.0:
-		spawn_interval /= 3.0
+		spawn_interval /= 2.4
 
 	spawn_timer -= delta
 	if spawn_timer <= 0.0:
@@ -368,6 +368,9 @@ func _check_persistent_unlocks() -> void:
 	# Mage: Reach level 20
 	if player.level >= 20:
 		GameState.set_unlock("char_mage", true)
+	# Trapper: Kill 200 enemies in a single run
+	if total_kills >= 200:
+		GameState.set_unlock("char_trapper", true)
 
 func _on_level_up(_lvl: int) -> void:
 	# --- Owned upgradeable weapons + evolutions (shuffled) ---

@@ -84,6 +84,7 @@ func make_elite() -> void:
 	_normal_modulate = Color(1.0, 0.85, 0.1, 1.0)
 	$Sprite2D.modulate = _normal_modulate
 	$Sprite2D.scale *= 1.2
+	_sprite_scale *= 1.2
 	$CollisionShape2D.scale *= 1.2
 
 func _compute_separation() -> Vector2:

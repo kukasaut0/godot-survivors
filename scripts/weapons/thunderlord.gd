@@ -1,8 +1,8 @@
 extends WeaponBase
 class_name Thunderlord
 
-var damage: float = 100.0
-var aoe_damage: float = 60.0
+var damage: float = 110.0
+var aoe_damage: float = 66.0
 var aoe_radius: float = 80.0
 var target_count: int = 8
 var strike_interval: float = 1.8
@@ -25,17 +25,17 @@ func _on_upgrade() -> void:
 	match level:
 		2:
 			target_count = 10
-			damage = 150.0
-			aoe_damage = 90.0
+			damage = 165.0
+			aoe_damage = 99.0
 		3:
 			target_count = 12
-			damage = 200.0
-			aoe_damage = 120.0
+			damage = 220.0
+			aoe_damage = 132.0
 			strike_interval = 1.4
 		4:
 			target_count = 16
-			damage = 280.0
-			aoe_damage = 180.0
+			damage = 308.0
+			aoe_damage = 198.0
 			aoe_radius = 110.0
 			strike_interval = 1.0
 

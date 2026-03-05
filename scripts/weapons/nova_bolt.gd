@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name NovaBolt
 
-var damage: float = 40.0
+var damage: float = 44.0
 var bolt_count: int = 8
 var fire_interval: float = 0.35
 var _timer: float = 0.0
@@ -24,13 +24,13 @@ func _on_upgrade() -> void:
 	match level:
 		2:
 			bolt_count = 12
-			damage = 56.0
+			damage = 61.6
 		3:
 			bolt_count = 16
 			fire_interval = 0.22
 		4:
 			bolt_count = 24
-			damage = 80.0
+			damage = 88.0
 			fire_interval = 0.14
 
 func get_next_upgrade_description() -> String:
