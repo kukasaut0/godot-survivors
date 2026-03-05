@@ -204,6 +204,8 @@ func _compute_spawn_interval() -> float:
 		# Steep ramp — lategame pressure
 		var progress := minf((time_elapsed - 480.0) / 420.0, 1.0)
 		result = base * 0.45 - progress * (base * 0.38)
+	if time_elapsed >= 240.0:
+		result *= 0.75
 	return maxf(result, level_data.min_spawn_interval)
 
 func trigger_screen_shake(intensity: float, duration: float) -> void:
