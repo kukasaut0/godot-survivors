@@ -46,12 +46,16 @@ func _ready() -> void:
 
 	var reset_btn := Button.new()
 	reset_btn.text = "Reset All (refund souls)"
+	reset_btn.custom_minimum_size = Vector2(0, 64)
+	reset_btn.add_theme_font_size_override("font_size", 18)
 	reset_btn.modulate = Color(1, 0.5, 0.5, 1)
 	reset_btn.pressed.connect(_on_reset)
 	bottom_row.add_child(reset_btn)
 
 	var close_btn := Button.new()
 	close_btn.text = "Close"
+	close_btn.custom_minimum_size = Vector2(120, 64)
+	close_btn.add_theme_font_size_override("font_size", 18)
 	close_btn.pressed.connect(_on_close)
 	bottom_row.add_child(close_btn)
 
@@ -96,7 +100,8 @@ func _make_row(id: String) -> HBoxContainer:
 	hbox.add_child(pip_lbl)
 
 	var buy_btn := Button.new()
-	buy_btn.custom_minimum_size = Vector2(110, 0)
+	buy_btn.custom_minimum_size = Vector2(130, 64)
+	buy_btn.add_theme_font_size_override("font_size", 18)
 	buy_btn.pressed.connect(_on_buy.bind(id))
 	_buy_buttons[id] = buy_btn
 	hbox.add_child(buy_btn)

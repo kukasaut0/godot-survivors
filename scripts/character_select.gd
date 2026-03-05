@@ -55,6 +55,8 @@ func _ready() -> void:
 
 	_shop_button = Button.new()
 	_shop_button.text = "Meta Shop"
+	_shop_button.custom_minimum_size = Vector2(0, 64)
+	_shop_button.add_theme_font_size_override("font_size", 20)
 	_shop_button.pressed.connect(_open_shop)
 	vbox.add_child(_shop_button)
 
@@ -75,7 +77,7 @@ func _build_cards() -> void:
 
 func _make_card(data: CharacterData, idx: int, is_unlocked: bool) -> PanelContainer:
 	var card := PanelContainer.new()
-	card.custom_minimum_size = Vector2(180, 240)
+	card.custom_minimum_size = Vector2(200, 300)
 	var vbox := VBoxContainer.new()
 	card.add_child(vbox)
 	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -106,6 +108,8 @@ func _make_card(data: CharacterData, idx: int, is_unlocked: bool) -> PanelContai
 		var btn := Button.new()
 		btn.text = "Select"
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.custom_minimum_size = Vector2(0, 64)
+		btn.add_theme_font_size_override("font_size", 20)
 		btn.pressed.connect(_on_character_selected.bind(idx))
 		vbox.add_child(btn)
 		_select_buttons.append(btn)
@@ -216,12 +220,15 @@ func _show_stage_select() -> void:
 		else:
 			btn.text = "Locked"
 			btn.disabled = true
-		btn.custom_minimum_size = Vector2(100, 0)
+		btn.custom_minimum_size = Vector2(120, 64)
+		btn.add_theme_font_size_override("font_size", 20)
 		hbox.add_child(btn)
 		stage_buttons.append(btn)
 
 	var back_btn := Button.new()
 	back_btn.text = "Back"
+	back_btn.custom_minimum_size = Vector2(0, 64)
+	back_btn.add_theme_font_size_override("font_size", 20)
 	back_btn.pressed.connect(func():
 		_stage_panel.queue_free()
 		_stage_panel = null
