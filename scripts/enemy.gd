@@ -17,6 +17,7 @@ var _flash_timer: float = 0.0
 var _max_health: float = 1.0
 var _half_screen: Vector2 = Vector2.ZERO
 var _has_entered_screen: bool = false
+var _sprite_scale: Vector2 = Vector2(0.4, 0.4)
 var _normal_modulate: Color = Color(1, 0.5, 0.2)
 var _sep_cache: Vector2 = Vector2.ZERO
 var _sep_frame: int = 0
@@ -99,15 +100,17 @@ func _compute_separation() -> Vector2:
 
 func _draw() -> void:
 	var ratio: float = clampf(health / _max_health, 0.0, 1.0)
-	const W: float = 38.0
+	# icon.svg is 128px tall; half = 64. Position bar just above the sprite top.
+	var W: float = _sprite_scale.x * 95.0
 	const H: float = 4.0
-	const Y: float = -34.0
+	var Y: float = -(_sprite_scale.y * 64.0 + 10.0)
 	draw_rect(Rect2(-W * 0.5, Y, W, H), Color(0.15, 0.0, 0.0, 0.85))
 	if ratio > 0.0:
 		var fill: Color = Color(1.0 - ratio, ratio * 0.85, 0.0, 1.0)
 		draw_rect(Rect2(-W * 0.5, Y, W * ratio, H), fill)
 
 func _apply_visuals(color: Color, sprite_scale: Vector2, collision_scale: Vector2) -> void:
+	_sprite_scale = sprite_scale
 	_normal_modulate = color
 	$Sprite2D.modulate = color
 	$Sprite2D.scale = sprite_scale
