@@ -389,7 +389,7 @@ func _on_level_up(_lvl: int) -> void:
 
 	# --- Weapon slot 1: 60% existing upgrade, 40% new from pool ---
 	var weapon_options: Array = []
-	var slot1_is_existing := not owned_upgradeable.is_empty() and randf() < 0.6
+	var slot1_is_existing := not owned_upgradeable.is_empty() and randf() < 0.25
 	if slot1_is_existing:
 		weapon_options.append(owned_upgradeable.pop_back())
 	elif not new_weapons.is_empty():
