@@ -39,20 +39,32 @@ func _ready() -> void:
 	for id in GameState.UPGRADE_IDS:
 		vbox.add_child(_make_row(id))
 
+	var bottom_row := HBoxContainer.new()
+	bottom_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	bottom_row.add_theme_constant_override("separation", 16)
+	vbox.add_child(bottom_row)
+
+	var reset_btn := Button.new()
+	reset_btn.text = "Reset All (refund souls)"
+	reset_btn.modulate = Color(1, 0.5, 0.5, 1)
+	reset_btn.pressed.connect(_on_reset)
+	bottom_row.add_child(reset_btn)
+
 	var close_btn := Button.new()
 	close_btn.text = "Close"
 	close_btn.pressed.connect(_on_close)
-	vbox.add_child(close_btn)
+	bottom_row.add_child(close_btn)
 
-	_wire_focus(close_btn)
+	_wire_focus(reset_btn, close_btn)
 	close_btn.grab_focus()
 
 	_refresh()
 
-func _wire_focus(close_btn: Button) -> void:
+func _wire_focus(reset_btn: Button, close_btn: Button) -> void:
 	var buttons: Array[Button] = []
 	for id in GameState.UPGRADE_IDS:
 		buttons.append(_buy_buttons[id])
+	buttons.append(reset_btn)
 	buttons.append(close_btn)
 	var n := buttons.size()
 	for i in n:
@@ -116,6 +128,16 @@ func _on_buy(id: String) -> void:
 	if GameState.spend_souls(cost):
 		GameState.set_upgrade_level(id, GameState.get_upgrade_level(id) + 1)
 		_refresh()
+
+func _on_reset() -> void:
+	var refund: int = 0
+	for id in GameState.UPGRADE_IDS:
+		var tier := GameState.get_upgrade_level(id)
+		for i in tier:
+			refund += GameState.UPGRADE_COSTS[id][i]
+		GameState.set_upgrade_level(id, 0)
+	GameState.add_souls(refund)
+	_refresh()
 
 func _on_close() -> void:
 	emit_signal("closed")

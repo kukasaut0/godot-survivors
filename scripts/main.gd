@@ -194,16 +194,16 @@ func _compute_spawn_interval() -> float:
 	var base := level_data.initial_spawn_interval
 	var result: float
 	if time_elapsed < 120.0:
-		# Gentle ramp (learning phase)
-		result = base - (time_elapsed / 120.0) * (base * 0.2)
+		# Very gentle ramp — early game breathing room
+		result = base - (time_elapsed / 120.0) * (base * 0.1)
 	elif time_elapsed < 480.0:
 		# Steady increase (core gameplay)
 		var progress := (time_elapsed - 120.0) / 360.0
-		result = base * 0.8 - progress * (base * 0.4)
+		result = base * 0.9 - progress * (base * 0.45)
 	else:
-		# Aggressive ramp (endgame)
+		# Steep ramp — lategame pressure
 		var progress := minf((time_elapsed - 480.0) / 420.0, 1.0)
-		result = base * 0.4 - progress * (base * 0.25)
+		result = base * 0.45 - progress * (base * 0.38)
 	return maxf(result, level_data.min_spawn_interval)
 
 func trigger_screen_shake(intensity: float, duration: float) -> void:
