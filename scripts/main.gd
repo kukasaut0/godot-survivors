@@ -80,6 +80,14 @@ func _ready() -> void:
 		_surge_times.append(t)
 		t += SURGE_INTERVAL
 
+	if DisplayServer.is_touchscreen_available():
+		var joystick_layer := CanvasLayer.new()
+		joystick_layer.layer = 10
+		add_child(joystick_layer)
+		var joystick := preload("res://scripts/virtual_joystick.gd").new()
+		joystick_layer.add_child(joystick)
+		player.joystick = joystick
+
 	player.projectiles_container = projectiles_container
 	player._main_node = self
 	player.apply_character_data(character_data)

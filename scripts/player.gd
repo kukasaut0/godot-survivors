@@ -30,6 +30,7 @@ var revival_hp_percent: float = 0.0
 var _revival_used: bool = false
 
 var _main_node: Node = null
+var joystick: Node = null
 
 func apply_character_data(data: CharacterData) -> void:
 	speed = data.speed
@@ -58,6 +59,8 @@ func _physics_process(_delta: float) -> void:
 			Input.get_axis("ui_left", "ui_right"),
 			Input.get_axis("ui_up", "ui_down")
 		)
+		if dir.length() < 0.1 and joystick != null:
+			dir = joystick.direction
 		velocity = dir.normalized() * speed if dir.length() > 0 else Vector2.ZERO
 	move_and_slide()
 
