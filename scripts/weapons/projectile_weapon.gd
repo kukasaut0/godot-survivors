@@ -2,13 +2,13 @@ extends WeaponBase
 class_name ProjectileWeapon
 
 var damage: float = 14.4
-var shoot_cooldown: float = 0.8
+var shoot_cooldown: float = 0.96
 var projectile_count: int = 1
 var _shoot_timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Base shot (damage 18, cooldown 0.8s)",
+	"Base shot (damage 18, cooldown 0.96s)",
 	"Faster: Cooldown ×0.8",
 	"Spread: 2 bolts",
 	"Power: Damage ×1.3",

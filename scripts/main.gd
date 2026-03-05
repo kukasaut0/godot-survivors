@@ -214,6 +214,7 @@ func _compute_spawn_interval() -> float:
 		result = base * 0.45 - progress * (base * 0.38)
 	if time_elapsed >= 240.0:
 		result *= 0.75
+	result *= 0.9  # global +10% spawn frequency
 	return maxf(result, level_data.min_spawn_interval)
 
 func trigger_screen_shake(intensity: float, duration: float) -> void:
