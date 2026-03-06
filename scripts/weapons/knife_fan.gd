@@ -8,14 +8,14 @@ var _timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Fires 4 knives in all directions (dmg 16, 2.0s)",
-	"Damage: 22",
+	"Fires 4 knives in all directions (dmg 18, 2.0s)",
+	"Damage: 24",
 	"Count: 8 knives",
 	"Interval: 1.6s",
-	"Damage: 28",
+	"Damage: 31",
 	"Count: 12 knives",
 	"Interval: 1.2s",
-	"Max: 16 knives, dmg 40",
+	"Max: 16 knives, dmg 44",
 ]
 
 func _on_setup() -> void:

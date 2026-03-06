@@ -7,16 +7,16 @@ const SAVE_PATH := "user://unlocks.cfg"
 var _config := ConfigFile.new()
 
 const UPGRADE_IDS: Array[String] = ["vital_core", "quick_feet", "power_core", "accelerator", "scholar", "lucky", "armor", "revival"]
-const UPGRADE_MAX_TIER: int = 5
+const UPGRADE_MAX_TIER: int = 7
 const UPGRADE_COSTS: Dictionary = {
-	"vital_core":  [70, 140, 280, 560, 1120],
-	"quick_feet":  [70, 140, 280, 560, 1120],
-	"power_core":  [105, 210, 420, 840, 1680],
-	"accelerator": [105, 210, 420, 840, 1680],
-	"scholar":     [70, 140, 280, 560, 1120],
-	"lucky":       [70, 140, 280, 560, 1120],
-	"armor":       [105, 210, 420, 840, 1680],
-	"revival":     [140, 280, 560, 1120, 2100],
+	"vital_core":  [70, 140, 280, 560, 1120, 1300, 1456],
+	"quick_feet":  [70, 140, 280, 560, 1120, 1300, 1456],
+	"power_core":  [105, 210, 420, 840, 1680, 1960, 2184],
+	"accelerator": [105, 210, 420, 840, 1680, 1960, 2184],
+	"scholar":     [70, 140, 280, 560, 1120, 1300, 1456],
+	"lucky":       [70, 140, 280, 560, 1120, 1300, 1456],
+	"armor":       [105, 210, 420, 840, 1680, 1960, 2184],
+	"revival":     [140, 280, 560, 1120, 2100, 2450, 2730],
 }
 const UPGRADE_NAMES: Dictionary = {
 	"vital_core":  "Vital Core",

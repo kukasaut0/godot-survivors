@@ -118,7 +118,7 @@ func _init_passive_pool() -> void:
 		load("res://scripts/passives/passive_health.gd"),
 		load("res://scripts/passives/passive_xp.gd"),
 		load("res://scripts/passives/passive_cooldown.gd"),
-		load("res://scripts/passives/passive_magnet.gd"),
+		load("res://scripts/passives/passive_regen.gd"),
 		load("res://scripts/passives/passive_armor.gd"),
 		load("res://scripts/passives/passive_lifesteal.gd"),
 	]
@@ -324,7 +324,7 @@ func _apply_meta_upgrades() -> void:
 	if armor_tier > 0:
 		player.damage_reduction = 0.05 * armor_tier
 	if revival_tier > 0:
-		var percents := [0.3, 0.4, 0.5, 0.6, 0.75]
+		var percents := [0.3, 0.35, 0.4, 0.5, 0.6, 0.70, 0.85]
 		player.revival_hp_percent = percents[mini(revival_tier - 1, percents.size() - 1)]
 
 func _on_cash_out() -> void:
@@ -495,11 +495,11 @@ func _check_passive_evolutions() -> Array:
 		if w.is_maxed() and not player.weapons.any(func(x) -> bool: return x is CycloneBlades):
 			result.append(PassiveEvolutionOffer.new().init("Cyclone Blades", "cyclone_blades", w, passive_map["Boots"], player))
 
-	# Graviton Ring: boomerang (Boomerang) + Magnet
-	if weapon_map.has(Boomerang) and passive_map.has("Magnet"):
+	# Graviton Ring: boomerang (Boomerang) + Vital Stone
+	if weapon_map.has(Boomerang) and passive_map.has("Vital Stone"):
 		var w: WeaponBase = weapon_map[Boomerang]
 		if w.is_maxed() and not player.weapons.any(func(x) -> bool: return x is GravitonRing):
-			result.append(PassiveEvolutionOffer.new().init("Graviton Ring", "graviton_ring", w, passive_map["Magnet"], player))
+			result.append(PassiveEvolutionOffer.new().init("Graviton Ring", "graviton_ring", w, passive_map["Vital Stone"], player))
 
 	# Toxic Fortress: spike_strip (SpikeStrip) + Iron Shield
 	if weapon_map.has(SpikeStrip) and passive_map.has("Iron Shield"):

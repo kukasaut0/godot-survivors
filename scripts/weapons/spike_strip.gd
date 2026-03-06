@@ -12,14 +12,14 @@ var _zones: Array = []  # Array of {pos: Vector2, timer: float, tick_timer: floa
 const TICK_INTERVAL: float = 0.5
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Drops damage zones at your position (10 dmg, 80 radius, 2s CD)",
-	"Damage: 14, Max zones: 4",
+	"Drops damage zones at your position (11 dmg, 80 radius, 2s CD)",
+	"Damage: 15, Max zones: 4",
 	"Radius: 100, Cooldown: 1.6s",
-	"Duration: 5.5s, Damage: 18",
+	"Duration: 5.5s, Damage: 20",
 	"Max zones: 5, Radius: 115",
-	"Cooldown: 1.3s, Damage: 24",
+	"Cooldown: 1.3s, Damage: 26",
 	"Duration: 6.5s, Max zones: 6",
-	"Max: 32 dmg, 130 radius, 8s, 1.0s CD, 7 zones",
+	"Max: 35 dmg, 130 radius, 8s, 1.0s CD, 7 zones",
 ]
 
 func _on_setup() -> void:

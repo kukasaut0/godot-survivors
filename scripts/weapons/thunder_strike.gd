@@ -8,14 +8,14 @@ var _timer: float = 0.0
 var _lightning_targets: Array[Vector2] = []
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Zaps the nearest enemy (dmg 36, 3s)",
+	"Zaps the nearest enemy (dmg 32, 3s)",
 	"Targets: 2",
-	"Damage 60, interval 2.5s",
+	"Damage 53, interval 2.5s",
 	"Targets: 3",
-	"Damage 84, interval 2s",
+	"Damage 74, interval 2s",
 	"Targets: 4",
-	"Damage 120, interval 1.5s",
-	"Max: 5 targets, dmg 144, 1s",
+	"Damage 106, interval 1.5s",
+	"Max: 5 targets, dmg 127, 1s",
 ]
 
 func _on_setup() -> void:

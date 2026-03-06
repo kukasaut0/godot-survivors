@@ -1,10 +1,11 @@
 extends WeaponBase
 class_name Boomerang
 
-var damage: float = 19.8
+var damage: float = 24.0
 var orbit_radius: float = 100.0
-var orbit_speed: float = 3.0
+var orbit_speed: float = 3.5
 var blade_count: int = 1
+var knockback_force: float = 150.0
 var _angle: float = 0.0
 var _hit_cooldowns: Dictionary = {}
 
@@ -12,14 +13,14 @@ const HIT_COOLDOWN: float = 0.25
 const HIT_RADIUS_SQ: float = 1600.0  # 40px
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Orbiting blade damages enemies (1 blade, 18 dmg, 100 radius)",
+	"Orbiting blade with knockback (1 blade, 24 dmg, 100 radius)",
 	"Blades: 2",
-	"Damage: 27, Radius: 120",
+	"Damage: 36, Radius: 120",
 	"Speed: 4 rad/s",
-	"Blades: 3, Damage: 36",
+	"Blades: 3, Damage: 48, Knockback +50",
 	"Radius: 150",
 	"Blades: 4, Speed: 4.5 rad/s",
-	"Max: 5 blades, 54 dmg, 180 radius, 5 rad/s",
+	"Max: 5 blades, 72 dmg, 180 radius, 5 rad/s",
 ]
 
 func _on_setup() -> void:
@@ -31,13 +32,14 @@ func _on_upgrade() -> void:
 		2:
 			blade_count = 2
 		3:
-			damage = 29.7
+			damage = 36.0
 			orbit_radius = 120.0
 		4:
 			orbit_speed = 4.0
 		5:
 			blade_count = 3
-			damage = 39.6
+			damage = 48.0
+			knockback_force = 200.0
 		6:
 			orbit_radius = 150.0
 		7:
@@ -45,7 +47,7 @@ func _on_upgrade() -> void:
 			orbit_speed = 4.5
 		8:
 			blade_count = 5
-			damage = 59.4
+			damage = 72.0
 			orbit_radius = 180.0
 			orbit_speed = 5.0
 	queue_redraw()
@@ -80,6 +82,8 @@ func _physics_process(delta: float) -> void:
 				continue
 			if blade_pos.distance_squared_to(e.global_position) < HIT_RADIUS_SQ:
 				e.take_damage(damage * dmg_mult)
+				var push_dir: Vector2 = ((e as Node2D).global_position - _player.global_position).normalized()
+				e.apply_knockback(push_dir * knockback_force)
 				_hit_cooldowns[eid] = HIT_COOLDOWN
 
 	queue_redraw()
