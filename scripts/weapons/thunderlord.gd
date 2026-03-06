@@ -1,19 +1,19 @@
 extends WeaponBase
 class_name Thunderlord
 
-var damage: float = 110.0
-var aoe_damage: float = 66.0
-var aoe_radius: float = 80.0
-var target_count: int = 8
-var strike_interval: float = 1.8
+var damage: float = 140.0
+var aoe_damage: float = 84.0
+var aoe_radius: float = 90.0
+var target_count: int = 10
+var strike_interval: float = 1.5
 var _timer: float = 0.0
 var _lightning_targets: Array[Vector2] = []
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"EVOLUTION: Lightning strikes each target with an AoE explosion (8 targets, 100+60 dmg, 1.8s)",
-	"Targets: 10, Damage: 150+90",
-	"Targets: 12, Damage: 200+120, Interval: 1.4s",
-	"Max: 16 targets, 280+180 dmg, 1.0s",
+	"EVOLUTION: Lightning strikes each target with an AoE explosion (10 targets, 140+84 dmg, 1.5s)",
+	"Targets: 12, Damage: 200+120",
+	"Targets: 14, Damage: 265+160, Interval: 1.2s",
+	"Max: 18 targets, 360+220 dmg, 0.9s",
 ]
 
 func _on_setup() -> void:
@@ -24,20 +24,20 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			target_count = 10
-			damage = 165.0
-			aoe_damage = 99.0
-		3:
 			target_count = 12
-			damage = 220.0
-			aoe_damage = 132.0
-			strike_interval = 1.4
+			damage = 200.0
+			aoe_damage = 120.0
+		3:
+			target_count = 14
+			damage = 265.0
+			aoe_damage = 160.0
+			strike_interval = 1.2
 		4:
-			target_count = 16
-			damage = 308.0
-			aoe_damage = 198.0
-			aoe_radius = 110.0
-			strike_interval = 1.0
+			target_count = 18
+			damage = 360.0
+			aoe_damage = 220.0
+			aoe_radius = 120.0
+			strike_interval = 0.9
 
 func get_next_upgrade_description() -> String:
 	if is_maxed():

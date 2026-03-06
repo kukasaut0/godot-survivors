@@ -8,14 +8,14 @@ var knockback_force: float = 0.0
 var _tick_timer: float = 0.0
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Aura damages nearby enemies (dmg 10, radius 120, tick 0.5s)",
+	"Aura damages nearby enemies (dmg 5, radius 120, tick 0.5s)",
 	"Range: Radius 160",
-	"Power: Damage 16",
+	"Power: Damage 8",
 	"Knockback: Push enemies outward",
 	"Range: Radius 200",
-	"Power: Damage 24",
+	"Power: Damage 12",
 	"Speed: Tick 0.25s",
-	"Max Power: Radius 260, Damage 32",
+	"Max Power: Radius 260, Damage 16",
 ]
 
 func _on_setup() -> void:

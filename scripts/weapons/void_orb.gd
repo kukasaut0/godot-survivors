@@ -1,11 +1,11 @@
 extends WeaponBase
 class_name VoidOrb
 
-var bolt_damage: float = 26.4
-var bolt_count: int = 4
+var bolt_damage: float = 36.0
+var bolt_count: int = 5
 var bolt_cooldown: float = 0.4
-var aura_damage: float = 15.84
-var aura_radius: float = 200.0
+var aura_damage: float = 28.0
+var aura_radius: float = 240.0
 var aura_tick: float = 0.4
 
 var _bolt_timer: float = 0.0
@@ -13,10 +13,10 @@ var _aura_timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"EVOLUTION: 4 bolts + damage aura (combined Magic Bolt + Holy Onion)",
-	"Power: Bolt dmg 42, Aura dmg 26",
-	"Range: Aura radius 260, Bolt count 6",
-	"Max Power: Bolt dmg 60, Aura dmg 36, tick 0.3s",
+	"EVOLUTION: 5 bolts + void aura (36 dmg, 28 aura, 240 radius)",
+	"Power: Bolt dmg 50, Aura dmg 40",
+	"Range: Aura radius 300, Bolt count 7",
+	"Max Power: Bolt dmg 70, Aura dmg 55, tick 0.3s",
 ]
 
 func _on_setup() -> void:
@@ -28,14 +28,14 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			bolt_damage = 37.0
-			aura_damage = 23.2
+			bolt_damage = 50.0
+			aura_damage = 40.0
 		3:
-			aura_radius = 260.0
-			bolt_count = 6
+			aura_radius = 300.0
+			bolt_count = 7
 		4:
-			bolt_damage = 52.8
-			aura_damage = 31.7
+			bolt_damage = 70.0
+			aura_damage = 55.0
 			aura_tick = 0.3
 	queue_redraw()
 

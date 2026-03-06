@@ -12,7 +12,7 @@ func show_options(options: Array) -> void:
 	for item in options:
 		var btn := Button.new()
 		var prefix: String
-		if item is EvolutionOffer:
+		if item is EvolutionOffer or item is PassiveEvolutionOffer:
 			prefix = "[EVOLVE]"
 		elif item.is_acquired():
 			prefix = "[LVL %d]" % (item.level + 1)

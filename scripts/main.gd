@@ -278,7 +278,7 @@ func _on_enemy_died_at(pos: Vector2, xp_value: int) -> void:
 	# Combo system
 	_combo_count += 1
 	_combo_timer = COMBO_WINDOW
-	var xp_bonus: float = 1.0
+	var xp_bonus: float = 1.1 if time_elapsed < 120.0 else 1.0
 	if _combo_count >= 50:
 		xp_bonus = 1.10
 		hud.show_combo(_combo_count, "ULTRA!")
