@@ -32,5 +32,9 @@ func create_weapon(weapon_id: String) -> WeaponBase:
 			return GravitonRing.new()
 		"toxic_fortress":
 			return ToxicFortress.new()
+		"bazooka":
+			return Bazooka.new()
+		"bloodburst":
+			return Bloodburst.new()
 	push_warning("WeaponRegistry: unknown weapon_id '%s'" % weapon_id)
 	return null

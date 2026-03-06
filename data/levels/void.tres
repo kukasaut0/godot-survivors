@@ -1,0 +1,162 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=32 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/level_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/enemy_spawn_wave.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/data/enemy_spawn_entry.gd" id="3"]
+[ext_resource type="Resource" path="res://data/enemies/brute.tres" id="4"]
+[ext_resource type="Resource" path="res://data/enemies/ghost.tres" id="5"]
+[ext_resource type="Resource" path="res://data/enemies/charger.tres" id="6"]
+[ext_resource type="Resource" path="res://data/enemies/swarm.tres" id="7"]
+
+[sub_resource type="Resource" id="w1_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.35
+
+[sub_resource type="Resource" id="w1_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.35
+
+[sub_resource type="Resource" id="w1_swarm"]
+script = ExtResource("3")
+enemy_data = ExtResource("7")
+weight = 0.3
+
+[sub_resource type="Resource" id="wave1"]
+script = ExtResource("2")
+start_time = 0.0
+end_time = 80.0
+spawn_entries = Array[Resource]([SubResource("w1_ghost"), SubResource("w1_charger"), SubResource("w1_swarm")])
+
+[sub_resource type="Resource" id="w2_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.3
+
+[sub_resource type="Resource" id="w2_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.4
+
+[sub_resource type="Resource" id="w2_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("4")
+weight = 0.3
+
+[sub_resource type="Resource" id="wave2"]
+script = ExtResource("2")
+start_time = 80.0
+end_time = 200.0
+spawn_entries = Array[Resource]([SubResource("w2_ghost"), SubResource("w2_charger"), SubResource("w2_brute")])
+
+[sub_resource type="Resource" id="w3_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.35
+
+[sub_resource type="Resource" id="w3_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.3
+
+[sub_resource type="Resource" id="w3_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("4")
+weight = 0.25
+
+[sub_resource type="Resource" id="w3_swarm"]
+script = ExtResource("3")
+enemy_data = ExtResource("7")
+weight = 0.1
+
+[sub_resource type="Resource" id="wave3"]
+script = ExtResource("2")
+start_time = 200.0
+end_time = 400.0
+spawn_entries = Array[Resource]([SubResource("w3_charger"), SubResource("w3_ghost"), SubResource("w3_brute"), SubResource("w3_swarm")])
+
+[sub_resource type="Resource" id="w4_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("4")
+weight = 0.3
+
+[sub_resource type="Resource" id="w4_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.4
+
+[sub_resource type="Resource" id="w4_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.3
+
+[sub_resource type="Resource" id="wave4"]
+script = ExtResource("2")
+start_time = 400.0
+end_time = 600.0
+spawn_entries = Array[Resource]([SubResource("w4_brute"), SubResource("w4_charger"), SubResource("w4_ghost")])
+
+[sub_resource type="Resource" id="w5_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.4
+
+[sub_resource type="Resource" id="w5_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("4")
+weight = 0.35
+
+[sub_resource type="Resource" id="w5_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.25
+
+[sub_resource type="Resource" id="wave5"]
+script = ExtResource("2")
+start_time = 600.0
+end_time = 900.0
+spawn_entries = Array[Resource]([SubResource("w5_charger"), SubResource("w5_brute"), SubResource("w5_ghost")])
+
+[sub_resource type="Resource" id="w6_charger"]
+script = ExtResource("3")
+enemy_data = ExtResource("6")
+weight = 0.45
+
+[sub_resource type="Resource" id="w6_brute"]
+script = ExtResource("3")
+enemy_data = ExtResource("4")
+weight = 0.35
+
+[sub_resource type="Resource" id="w6_ghost"]
+script = ExtResource("3")
+enemy_data = ExtResource("5")
+weight = 0.2
+
+[sub_resource type="Resource" id="wave6"]
+script = ExtResource("2")
+start_time = 900.0
+end_time = inf
+spawn_entries = Array[Resource]([SubResource("w6_charger"), SubResource("w6_brute"), SubResource("w6_ghost")])
+
+[resource]
+script = ExtResource("1")
+id = "void"
+display_name = "The Void"
+initial_spawn_interval = 0.83
+min_spawn_interval = 0.09
+interval_decay_per_30s = 0.1
+spawn_count_base = 1
+spawn_count_per_30s = 1
+max_spawn_count = 10
+spawn_distance_min = 350.0
+spawn_distance_max = 550.0
+waves = Array[Resource]([SubResource("wave1"), SubResource("wave2"), SubResource("wave3"), SubResource("wave4"), SubResource("wave5"), SubResource("wave6")])
+win_time = 1200.0
+boss_spawn_times = Array[float]([150.0, 300.0, 450.0, 600.0, 750.0, 900.0, 1050.0])
+boss_data_path = "res://data/enemies/boss_void.tres"
+elite_chance = 0.10
+health_drop_chance = 0.015
+background_color = Color(0.02, 0.0, 0.05, 1)
+soul_multiplier = 3.0
+max_weapons = 5

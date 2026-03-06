@@ -19,3 +19,4 @@ class_name LevelData
 @export var health_drop_chance: float = 0.05
 @export var background_color: Color = Color(0.05, 0.08, 0.05, 1)
 @export var soul_multiplier: float = 1.0
+@export var max_weapons: int = 4

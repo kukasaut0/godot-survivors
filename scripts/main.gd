@@ -31,8 +31,8 @@ var _boss_spawn_times: Array[float] = []
 var _boss_data: EnemyData = null
 
 # Weapon discovery pool
-const MAX_WEAPONS := 4
-const ALL_WEAPON_IDS: Array[String] = ["magic_bolt", "holy_onion", "thunder_strike", "knife_fan", "boomerang", "spike_strip"]
+var _max_weapons: int = 4
+const ALL_WEAPON_IDS: Array[String] = ["magic_bolt", "holy_onion", "thunder_strike", "knife_fan", "boomerang", "spike_strip", "bazooka"]
 var _weapon_pool: Array[String] = []
 var _pending_new_weapons: Array = []
 var _pending_weapon_ids: Dictionary = {}  # WeaponBase → weapon_id string
@@ -63,6 +63,7 @@ func _ready() -> void:
 		level_data = load("res://data/levels/default.tres")
 
 	# Load stage-specific data
+	_max_weapons = level_data.max_weapons
 	_boss_spawn_times = level_data.boss_spawn_times.duplicate()
 	_boss_data = load(level_data.boss_data_path) as EnemyData
 	_elite_chance = level_data.elite_chance
@@ -346,6 +347,8 @@ func _on_run_complete() -> void:
 			GameState.set_unlock("stage_crypt_clear", true)
 		"abyss":
 			GameState.set_unlock("stage_abyss_clear", true)
+		"void":
+			GameState.set_unlock("stage_void_clear", true)
 	var souls_earned := int((int(time_elapsed / 60.0) * 10 + total_kills) * level_data.soul_multiplier)
 	GameState.add_souls(souls_earned)
 	hud.show_victory(time_elapsed, player, total_kills, total_damage_dealt, souls_earned)
@@ -371,6 +374,9 @@ func _check_persistent_unlocks() -> void:
 	# Trapper: Kill 200 enemies in a single run
 	if total_kills >= 200:
 		GameState.set_unlock("char_trapper", true)
+	# Demolisher: Deal 50,000 total damage in a single run
+	if total_damage_dealt >= 50000.0:
+		GameState.set_unlock("char_demolisher", true)
 
 func _on_level_up(_lvl: int) -> void:
 	# --- Owned upgradeable weapons + evolutions (shuffled) ---
@@ -383,7 +389,7 @@ func _on_level_up(_lvl: int) -> void:
 	owned_upgradeable.shuffle()
 
 	# --- New weapons from pool (up to 2) ---
-	var new_slots: int = MAX_WEAPONS - player.weapons.size() - _pending_new_weapons.size()
+	var new_slots: int = _max_weapons - player.weapons.size() - _pending_new_weapons.size()
 	_weapon_pool.shuffle()
 	var new_weapons: Array = []
 	var pool_i := 0
@@ -506,6 +512,12 @@ func _check_passive_evolutions() -> Array:
 		var w: WeaponBase = weapon_map[SpikeStrip]
 		if w.is_maxed() and not player.weapons.any(func(x) -> bool: return x is ToxicFortress):
 			result.append(PassiveEvolutionOffer.new().init("Toxic Fortress", "toxic_fortress", w, passive_map["Iron Shield"], player))
+
+	# Bloodburst: bazooka (Bazooka) + Vampiric Fang
+	if weapon_map.has(Bazooka) and passive_map.has("Vampiric Fang"):
+		var w: WeaponBase = weapon_map[Bazooka]
+		if w.is_maxed() and not player.weapons.any(func(x) -> bool: return x is Bloodburst):
+			result.append(PassiveEvolutionOffer.new().init("Bloodburst", "bloodburst", w, passive_map["Vampiric Fang"], player))
 
 	return result
 

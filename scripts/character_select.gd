@@ -6,6 +6,7 @@ const CHARACTER_FILES: Array[String] = [
 	"res://data/characters/tank_hero.tres",
 	"res://data/characters/mage.tres",
 	"res://data/characters/trapper.tres",
+	"res://data/characters/demolisher.tres",
 ]
 
 const CHARACTER_UNLOCK_KEYS: Array[String] = [
@@ -14,6 +15,7 @@ const CHARACTER_UNLOCK_KEYS: Array[String] = [
 	"char_tank_hero",
 	"char_mage",
 	"char_trapper",
+	"char_demolisher",
 ]
 
 const CHARACTER_UNLOCK_HINTS: Array[String] = [
@@ -22,18 +24,21 @@ const CHARACTER_UNLOCK_HINTS: Array[String] = [
 	"LOCKED\nSurvive 10 minutes",
 	"LOCKED\nReach level 20\nin a single run",
 	"LOCKED\nKill 200 enemies\nin a single run",
+	"LOCKED\nDeal 50,000 damage\nin a single run",
 ]
 
 const LEVEL_FILES: Array[String] = [
 	"res://data/levels/default.tres",
 	"res://data/levels/crypt.tres",
 	"res://data/levels/abyss.tres",
+	"res://data/levels/void.tres",
 ]
 
 const LEVEL_UNLOCK_KEYS: Array[String] = [
 	"",
 	"stage_fields_clear",
 	"stage_crypt_clear",
+	"stage_abyss_clear",
 ]
 
 @onready var _grid: HBoxContainer = $VBox/CharacterGrid
