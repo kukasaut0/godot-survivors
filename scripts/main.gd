@@ -186,13 +186,13 @@ func _process(delta: float) -> void:
 	# Non-linear spawn scaling
 	var spawn_interval := _compute_spawn_interval()
 	if _surge_active > 0.0:
-		spawn_interval /= 1.7
+		spawn_interval /= 1.36
 
 	spawn_timer -= delta
 	if spawn_timer <= 0.0:
 		var count := mini(level_data.spawn_count_base + int(time_elapsed / 30.0) * level_data.spawn_count_per_30s, level_data.max_spawn_count)
 		if _surge_active > 0.0:
-			count = mini(count * 2, level_data.max_spawn_count * 2)
+			count = mini(int(count * 1.6), level_data.max_spawn_count * 2)
 		for i in count:
 			if enemies_container.get_child_count() < max_enemies:
 				_spawn_enemy()
