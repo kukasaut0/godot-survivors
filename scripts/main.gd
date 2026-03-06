@@ -186,7 +186,7 @@ func _process(delta: float) -> void:
 	# Non-linear spawn scaling
 	var spawn_interval := _compute_spawn_interval()
 	if _surge_active > 0.0:
-		spawn_interval /= 2.4
+		spawn_interval /= 1.7
 
 	spawn_timer -= delta
 	if spawn_timer <= 0.0:
