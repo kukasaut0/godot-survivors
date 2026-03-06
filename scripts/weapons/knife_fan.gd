@@ -61,5 +61,6 @@ func _fire_burst() -> void:
 		var proj: Area2D = _projectile_scene.instantiate()
 		proj.damage = damage * dmg_mult
 		proj.direction = Vector2(cos(angle), sin(angle))
+		proj.weapon_id = "knife_fan"
 		proj.global_position = _player.global_position
 		_projectiles_container.add_child(proj)

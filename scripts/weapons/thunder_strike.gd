@@ -73,7 +73,7 @@ func _strike() -> void:
 		return da < db)
 	_lightning_targets.clear()
 	for i in mini(target_count, candidates.size()):
-		candidates[i].take_damage(damage * dmg_mult)
+		candidates[i].take_damage_from(damage * dmg_mult, "thunder_strike")
 		_lightning_targets.append(to_local(candidates[i].global_position))
 	if not _lightning_targets.is_empty():
 		queue_redraw()

@@ -62,7 +62,7 @@ func _pulse() -> void:
 		if not is_instance_valid(e):
 			continue
 		if _player.global_position.distance_squared_to(e.global_position) <= radius * radius:
-			e.take_damage(damage * dmg_mult)
+			e.take_damage_from(damage * dmg_mult, "holy_onion")
 			if knockback_force > 0.0:
 				var push_dir: Vector2 = ((e as Node2D).global_position - _player.global_position).normalized()
 				e.apply_knockback(push_dir * knockback_force)

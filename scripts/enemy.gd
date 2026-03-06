@@ -23,6 +23,11 @@ var _sep_cache: Vector2 = Vector2.ZERO
 var _sep_frame: int = 0
 var _knockback_velocity: Vector2 = Vector2.ZERO
 
+var is_boss: bool = false
+var knockback_immune: bool = false
+var damage_immune_id: String = ""
+var damage_immune_name: String = ""
+
 # Behavior flags
 var _phase_through: bool = false
 var _charges: bool = false
@@ -94,6 +99,8 @@ func _compute_separation() -> Vector2:
 	for neighbor in get_tree().get_nodes_in_group("enemies"):
 		if neighbor == self or not is_instance_valid(neighbor):
 			continue
+		if (neighbor as Enemy).is_boss:
+			continue
 		var diff := global_position - (neighbor as Node2D).global_position
 		var dist := diff.length()
 		if dist < SEP_RADIUS and dist > 0.001:
@@ -102,7 +109,6 @@ func _compute_separation() -> Vector2:
 
 func _draw() -> void:
 	var ratio: float = clampf(health / _max_health, 0.0, 1.0)
-	# icon.svg is 128px tall; half = 64. Position bar just above the sprite top.
 	var W: float = _sprite_scale.x * 95.0
 	const H: float = 4.0
 	var Y: float = -(_sprite_scale.y * 64.0 + 10.0)
@@ -110,6 +116,16 @@ func _draw() -> void:
 	if ratio > 0.0:
 		var fill: Color = Color(1.0 - ratio, ratio * 0.85, 0.0, 1.0)
 		draw_rect(Rect2(-W * 0.5, Y, W * ratio, H), fill)
+	if is_boss:
+		var font := ThemeDB.fallback_font
+		const FONT_SIZE: int = 11
+		var label_w: float = _sprite_scale.x * 220.0
+		var label_x: float = -label_w * 0.5
+		var y_kb: float = Y - 26.0
+		var y_dmg: float = Y - 13.0
+		draw_string(font, Vector2(label_x, y_kb), "IMMUNE: Knockback", HORIZONTAL_ALIGNMENT_LEFT, label_w, FONT_SIZE, Color(1.0, 0.85, 0.2, 1.0))
+		if damage_immune_name != "":
+			draw_string(font, Vector2(label_x, y_dmg), "IMMUNE: " + damage_immune_name, HORIZONTAL_ALIGNMENT_LEFT, label_w, FONT_SIZE, Color(1.0, 0.4, 0.4, 1.0))
 
 func _apply_visuals(color: Color, sprite_scale: Vector2, collision_scale: Vector2) -> void:
 	_sprite_scale = sprite_scale
@@ -127,7 +143,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	# Separation (skipped for ghosts)
-	if not _phase_through:
+	if not _phase_through and not is_boss:
 		_sep_frame = (_sep_frame + 1) % SEP_INTERVAL
 		if _sep_frame == 0:
 			_sep_cache = _compute_separation()
@@ -194,7 +210,14 @@ func _reposition() -> void:
 	_has_entered_screen = false
 
 func apply_knockback(impulse: Vector2) -> void:
+	if knockback_immune:
+		return
 	_knockback_velocity = impulse
+
+func take_damage_from(amount: float, source_id: String) -> void:
+	if damage_immune_id != "" and source_id == damage_immune_id:
+		return
+	take_damage(amount)
 
 func take_damage(amount: float) -> void:
 	var actual := minf(amount, health)

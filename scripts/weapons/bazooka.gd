@@ -85,7 +85,7 @@ func _explode(pos: Vector2) -> void:
 		if not is_instance_valid(e):
 			continue
 		if pos.distance_squared_to((e as Node2D).global_position) <= rad_sq:
-			e.take_damage(damage * dmg_mult)
+			e.take_damage_from(damage * dmg_mult, "bazooka")
 	_explosions.append({"pos": pos, "timer": EXPLOSION_FLASH_TIME})
 	queue_redraw()
 

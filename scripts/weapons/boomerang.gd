@@ -81,7 +81,7 @@ func _physics_process(delta: float) -> void:
 			if _hit_cooldowns.has(eid):
 				continue
 			if blade_pos.distance_squared_to(e.global_position) < HIT_RADIUS_SQ:
-				e.take_damage(damage * dmg_mult)
+				e.take_damage_from(damage * dmg_mult, "boomerang")
 				var push_dir: Vector2 = ((e as Node2D).global_position - _player.global_position).normalized()
 				e.apply_knockback(push_dir * knockback_force)
 				_hit_cooldowns[eid] = HIT_COOLDOWN

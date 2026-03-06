@@ -83,5 +83,6 @@ func _spawn_projectile(direction: Vector2) -> void:
 	proj.damage = damage * dmg_mult
 	proj.direction = direction
 	proj.max_range = projectile_range
+	proj.weapon_id = "magic_bolt"
 	proj.global_position = _player.global_position
 	_projectiles_container.add_child(proj)

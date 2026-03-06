@@ -32,6 +32,11 @@ var _boss_data: EnemyData = null
 
 # Weapon discovery pool
 var _max_weapons: int = 4
+const _WEAPON_DISPLAY_NAMES: Dictionary = {
+	"magic_bolt": "Magic Bolt", "holy_onion": "Holy Onion",
+	"thunder_strike": "Thunder Strike", "knife_fan": "Knife Fan",
+	"boomerang": "Boomerang", "spike_strip": "Spike Strip", "bazooka": "Bazooka",
+}
 const ALL_WEAPON_IDS: Array[String] = ["magic_bolt", "holy_onion", "thunder_strike", "knife_fan", "boomerang", "spike_strip", "bazooka"]
 var _weapon_pool: Array[String] = []
 var _pending_new_weapons: Array = []
@@ -250,6 +255,12 @@ func _spawn_boss() -> void:
 	enemy.global_position = player.global_position + Vector2(cos(angle), sin(angle)) * dist
 	enemy.setup(player)
 	enemy.apply_enemy_data(_boss_data, time_elapsed)
+	enemy.is_boss = true
+	enemy.knockback_immune = true
+	var immune_ids := _WEAPON_DISPLAY_NAMES.keys()
+	var immune_id: String = immune_ids[randi() % immune_ids.size()]
+	enemy.damage_immune_id = immune_id
+	enemy.damage_immune_name = _WEAPON_DISPLAY_NAMES[immune_id]
 	enemy.died_at.connect(_on_enemy_died_at)
 	enemy.damage_taken.connect(func(amount: float) -> void:
 		total_damage_dealt += amount

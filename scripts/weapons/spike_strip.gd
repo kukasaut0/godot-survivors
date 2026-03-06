@@ -90,7 +90,7 @@ func _damage_enemies_in_zone(zone_pos: Vector2) -> void:
 		if not is_instance_valid(e):
 			continue
 		if zone_pos.distance_squared_to(e.global_position) <= rad_sq:
-			e.take_damage(damage_per_tick * dmg_mult)
+			e.take_damage_from(damage_per_tick * dmg_mult, "spike_strip")
 
 func _draw() -> void:
 	for zone in _zones:
