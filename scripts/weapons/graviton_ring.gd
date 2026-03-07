@@ -1,12 +1,12 @@
 extends WeaponBase
 class_name GravitonRing
 
-var damage: float = 66.0
-var orbit_radius: float = 180.0
-var orbit_speed: float = 3.5
-var blade_count: int = 6
-var pull_force: float = 150.0
-var pull_radius: float = 280.0
+var damage: float = 70.0
+var orbit_radius: float = 190.0
+var orbit_speed: float = 5.0
+var blade_count: int = 7
+var pull_force: float = 200.0
+var pull_radius: float = 300.0
 var _angle: float = 0.0
 var _hit_cooldowns: Dictionary = {}
 
@@ -14,10 +14,10 @@ const HIT_COOLDOWN: float = 0.2
 const HIT_RADIUS_SQ: float = 1600.0  # 40px
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"EVOLUTION: Orbiting blades that pull enemies in (6 blades, 66 dmg, 180 radius)",
-	"Blades: 7, Damage: 88, Pull: stronger",
-	"Blades: 8, Damage: 115, Radius: 230",
-	"Max: 10 blades, 155 dmg, 280 radius, powerful pull",
+	"EVOLUTION: Orbiting blades that pull enemies in (7 blades, 70 dmg, 190 radius, 5.0 speed)",
+	"Blades: 8, Damage: 90, Pull: stronger, Radius: 210",
+	"Blades: 9, Damage: 115, Radius: 235, Pull radius: 380",
+	"Max: 11 blades, 145 dmg, 270 radius, speed 6.0, powerful pull",
 ]
 
 func _on_setup() -> void:
@@ -28,22 +28,23 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			blade_count = 7
-			damage = 88.0
-			pull_force = 240.0
-		3:
 			blade_count = 8
+			damage = 90.0
+			orbit_radius = 210.0
+			pull_force = 280.0
+		3:
+			blade_count = 9
 			damage = 115.0
-			orbit_radius = 230.0
-			pull_radius = 360.0
-			pull_force = 320.0
+			orbit_radius = 235.0
+			pull_radius = 380.0
+			pull_force = 370.0
 		4:
-			blade_count = 10
-			damage = 155.0
-			orbit_radius = 280.0
+			blade_count = 11
+			damage = 145.0
+			orbit_radius = 270.0
 			pull_radius = 460.0
-			pull_force = 440.0
-			orbit_speed = 4.5
+			pull_force = 480.0
+			orbit_speed = 6.0
 	queue_redraw()
 
 func get_next_upgrade_description() -> String:

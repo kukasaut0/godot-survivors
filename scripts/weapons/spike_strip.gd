@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name SpikeStrip
 
-var damage_per_tick: float = 11.0
+var damage_per_tick: float = 25.0
 var zone_radius: float = 80.0
 var zone_duration: float = 4.0
 var drop_cooldown: float = 2.0
@@ -12,14 +12,14 @@ var _zones: Array = []  # Array of {pos: Vector2, timer: float, tick_timer: floa
 const TICK_INTERVAL: float = 0.5
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Drops damage zones at your position (11 dmg, 80 radius, 2s CD)",
-	"Damage: 15, Max zones: 4",
-	"Radius: 100, Cooldown: 1.6s",
-	"Duration: 5.5s, Damage: 20",
-	"Max zones: 5, Radius: 115",
-	"Cooldown: 1.3s, Damage: 26",
-	"Duration: 6.5s, Max zones: 6",
-	"Max: 35 dmg, 130 radius, 8s, 1.0s CD, 7 zones",
+	"Drops damage zones at your position (25 dmg, 80 radius, 2s CD)",
+	"Damage: 35, Max zones: 4",
+	"Damage: 45, Radius: 100, Cooldown: 1.6s",
+	"Damage: 55, Duration: 5.5s",
+	"Damage: 65, Max zones: 5, Radius: 115",
+	"Damage: 80, Cooldown: 1.3s",
+	"Damage: 95, Duration: 6.5s, Max zones: 6",
+	"Max: 115 dmg, 135 radius, 8s, 1.0s CD, 7 zones",
 ]
 
 func _on_setup() -> void:
@@ -29,26 +29,29 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			damage_per_tick = 15.4
+			damage_per_tick = 35.0
 			max_zones = 4
 		3:
+			damage_per_tick = 45.0
 			zone_radius = 100.0
 			drop_cooldown = 1.6
 		4:
+			damage_per_tick = 55.0
 			zone_duration = 5.5
-			damage_per_tick = 19.8
 		5:
+			damage_per_tick = 65.0
 			max_zones = 5
 			zone_radius = 115.0
 		6:
+			damage_per_tick = 80.0
 			drop_cooldown = 1.3
-			damage_per_tick = 26.4
 		7:
+			damage_per_tick = 95.0
 			zone_duration = 6.5
 			max_zones = 6
 		8:
-			damage_per_tick = 35.2
-			zone_radius = 130.0
+			damage_per_tick = 115.0
+			zone_radius = 135.0
 			zone_duration = 8.0
 			drop_cooldown = 1.0
 			max_zones = 7

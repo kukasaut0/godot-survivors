@@ -1,12 +1,12 @@
 extends WeaponBase
 class_name StormTempest
 
-var thunder_damage: float = 84.5
-var thunder_targets: int = 6
-var thunder_interval: float = 0.8
-var knife_damage: float = 26.4
-var knife_count: int = 20
-var knife_interval: float = 1.0
+var thunder_damage: float = 130.0
+var thunder_targets: int = 9
+var thunder_interval: float = 0.65
+var knife_damage: float = 42.0
+var knife_count: int = 22
+var knife_interval: float = 0.85
 
 var _thunder_timer: float = 0.0
 var _knife_timer: float = 0.0
@@ -14,10 +14,10 @@ var _projectile_scene: PackedScene = null
 var _lightning_targets: Array[Vector2] = []
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"EVOLUTION: Storm zaps + knife fan (combined Thunder Strike + Knife Fan)",
-	"Power: Thunder dmg 90, Knife dmg 30",
-	"Count: 8 thunder targets, 22 knives",
-	"Max: Thunder dmg 120, Knife dmg 42, 0.75s/1.0s intervals",
+	"EVOLUTION: Storm zaps + knife fan (9 targets, 130 thunder dmg, 0.65s / 22 knives, 42 dmg, 0.85s)",
+	"Thunder dmg 160, Knife dmg 52",
+	"Thunder targets: 11, Knives: 26, Thunder interval: 0.60s",
+	"Max: Thunder dmg 195, Knife dmg 64, intervals 0.55s/0.75s, 13 targets, 28 knives",
 ]
 
 func _on_setup() -> void:
@@ -29,16 +29,19 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			thunder_damage = 90.0
-			knife_damage = 30.0
+			thunder_damage = 160.0
+			knife_damage = 52.0
 		3:
-			thunder_targets = 8
-			knife_count = 22
+			thunder_targets = 11
+			knife_count = 26
+			thunder_interval = 0.60
 		4:
-			thunder_damage = 120.0
-			knife_damage = 42.0
-			thunder_interval = 0.75
-			knife_interval = 1.0
+			thunder_damage = 195.0
+			knife_damage = 64.0
+			thunder_targets = 13
+			knife_count = 28
+			thunder_interval = 0.55
+			knife_interval = 0.75
 	queue_redraw()
 
 func get_next_upgrade_description() -> String:

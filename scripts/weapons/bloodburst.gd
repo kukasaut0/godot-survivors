@@ -1,9 +1,9 @@
 extends WeaponBase
 class_name Bloodburst
 
-var damage: float = 240.0
-var explosion_radius: float = 220.0
-var fire_interval: float = 1.8
+var damage: float = 350.0
+var explosion_radius: float = 230.0
+var fire_interval: float = 1.1
 var rocket_speed: float = 440.0
 var projectile_count: int = 3
 var lifesteal_pct: float = 0.15
@@ -16,10 +16,10 @@ const ROCKET_HIT_RADIUS: float = 28.0
 const EXPLOSION_FLASH_TIME: float = 0.4
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"EVOLUTION: 3 life-draining rockets (240 dmg, 220 radius, 15% lifesteal)",
-	"Damage: 300",
-	"Radius: 260, Interval: 1.5s, Count: 4",
-	"Max: 380 dmg, 300 radius, 1.2s",
+	"EVOLUTION: 3 life-draining rockets (350 dmg, 230 radius, 1.1s, 15% lifesteal)",
+	"Damage: 440, Interval: 1.0s, Radius: 250",
+	"Damage: 540, Interval: 0.9s, Count: 4, Radius: 270",
+	"Max: 660 dmg, 310 radius, 0.75s, Count: 5",
 ]
 
 func _on_setup() -> void:
@@ -29,9 +29,9 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		2: damage = 300.0
-		3: explosion_radius = 260.0; fire_interval = 1.5; projectile_count = 4
-		4: damage = 380.0; explosion_radius = 300.0; fire_interval = 1.2
+		2: damage = 440.0; fire_interval = 1.0; explosion_radius = 250.0
+		3: damage = 540.0; fire_interval = 0.9; projectile_count = 4; explosion_radius = 270.0
+		4: damage = 660.0; explosion_radius = 310.0; fire_interval = 0.75; projectile_count = 5
 
 func get_next_upgrade_description() -> String:
 	if is_maxed():

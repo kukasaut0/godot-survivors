@@ -1,9 +1,9 @@
 extends WeaponBase
 class_name CycloneDash
 
-var orbit_damage: float = 32.0
+var orbit_damage: float = 75.0
 var orbit_radius: float = 150.0
-var orbit_speed: float = 5.0
+var orbit_speed: float = 6.5
 var blade_count: int = 5
 var dash_cooldown: float = 3.0
 var boost_speed: float = 800.0
@@ -19,10 +19,10 @@ var _is_dashing: bool = false
 const HIT_COOLDOWN: float = 0.2
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"EVOLUTION: Orbital blades + dash (combined Boomerang + Jump)",
-	"Power: 56 dmg, 6 blades, faster orbit",
-	"Range: 200 radius, dash 900 speed",
-	"Max: 70 dmg, 7 blades, 250 radius, 2s cooldown",
+	"EVOLUTION: Orbital blades + dash (75 dmg, 5 blades, 6.5 speed — 2× dmg while dashing)",
+	"Damage: 100, Blades: 6, Speed: 7.0",
+	"Damage: 125, Speed: 7.5, Radius: 200",
+	"Max: 150 dmg, 7 blades, 250 radius, 8.0 speed, 2s cooldown",
 ]
 
 func _on_setup() -> void:
@@ -33,16 +33,19 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			orbit_damage = 44.8
+			orbit_damage = 100.0
 			blade_count = 6
-			orbit_speed = 6.0
+			orbit_speed = 7.0
 		3:
+			orbit_damage = 125.0
+			orbit_speed = 7.5
 			orbit_radius = 200.0
 			boost_speed = 900.0
 		4:
-			orbit_damage = 56.0
+			orbit_damage = 150.0
 			blade_count = 7
 			orbit_radius = 250.0
+			orbit_speed = 8.0
 			dash_cooldown = 2.0
 	queue_redraw()
 

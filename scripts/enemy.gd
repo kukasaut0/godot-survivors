@@ -66,10 +66,11 @@ func setup(player_ref: Node2D) -> void:
 func apply_enemy_data(data: EnemyData, time_elapsed: float, player_level: int = 1) -> void:
 	speed = data.base_speed + time_elapsed * data.speed_time_scale
 	var lvl_bonus: float = maxf(0.0, player_level - 3)
-	health = data.health * (1.0 + lvl_bonus * 0.154)
+	var lvl_scale: float = 1.0 + lvl_bonus * 0.26
+	health = data.health * lvl_scale
 	_max_health = health
 	damage = data.damage * (1.0 + lvl_bonus * 0.04)
-	xp_value = data.xp_value
+	xp_value = int(data.xp_value * (1.0 + time_elapsed / 1000.0))
 	contact_dist = data.contact_dist
 	_phase_through = data.phase_through
 	_charges = data.charges

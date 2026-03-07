@@ -1,9 +1,9 @@
 extends WeaponBase
 class_name Bazooka
 
-var damage: float = 80.0
+var damage: float = 145.0
 var explosion_radius: float = 110.0
-var fire_interval: float = 3.5
+var fire_interval: float = 2.9
 var rocket_speed: float = 380.0
 var projectile_count: int = 1
 
@@ -15,14 +15,14 @@ const ROCKET_HIT_RADIUS: float = 28.0
 const EXPLOSION_FLASH_TIME: float = 0.35
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Fires explosive rockets — AoE dmg (80 dmg, 110 radius, 3.5s)",
-	"Damage: 110",
-	"Interval: 2.8s, Radius: 130",
+	"Fires explosive rockets — AoE dmg (145 dmg, 110 radius, 2.9s)",
+	"Damage: 190",
+	"Interval: 2.3s, Radius: 130",
 	"Count: 2 rockets",
-	"Damage: 150",
-	"Radius: 160, Interval: 2.4s",
+	"Damage: 245",
+	"Radius: 160, Interval: 2.0s",
 	"Count: 3 rockets",
-	"Max: 200 dmg, 190 radius, 2.0s",
+	"Max: 330 dmg, 195 radius, 1.5s",
 ]
 
 func _on_setup() -> void:
@@ -31,13 +31,13 @@ func _on_setup() -> void:
 
 func _on_upgrade() -> void:
 	match level:
-		2: damage = 110.0
-		3: fire_interval = 2.8; explosion_radius = 130.0
+		2: damage = 190.0
+		3: fire_interval = 2.3; explosion_radius = 130.0
 		4: projectile_count = 2
-		5: damage = 150.0
-		6: explosion_radius = 160.0; fire_interval = 2.4
+		5: damage = 245.0
+		6: explosion_radius = 160.0; fire_interval = 2.0
 		7: projectile_count = 3
-		8: damage = 200.0; explosion_radius = 190.0; fire_interval = 2.0
+		8: damage = 330.0; explosion_radius = 195.0; fire_interval = 1.5
 
 func get_next_upgrade_description() -> String:
 	if is_maxed():

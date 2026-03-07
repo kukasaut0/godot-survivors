@@ -1,20 +1,20 @@
 extends WeaponBase
 class_name ToxicFortress
 
-var damage_per_tick: float = 44.0
-var zone_radius: float = 120.0
+var damage_per_tick: float = 90.0
+var zone_radius: float = 140.0
 var zone_duration: float = 10.0
 var drop_cooldown: float = 1.5
-var max_zones: int = 6
-var tick_interval: float = 0.4
+var max_zones: int = 8
+var tick_interval: float = 0.30
 var _drop_timer: float = 0.0
 var _zones: Array = []  # Array of {pos: Vector2, timer: float, tick_timer: float}
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"EVOLUTION: Massive persistent damage zones (40 dmg, 120 radius, 10s, 6 zones)",
-	"Damage: 55, Max zones: 7",
-	"Radius: 150, Cooldown: 1.2s, Damage: 75",
-	"Max: 100 dmg, 190 radius, 0.8s CD, 0.25s tick, 9 zones",
+	"EVOLUTION: Massive persistent damage zones (90 dmg, 140 radius, 10s, 8 zones, 0.30s tick)",
+	"Damage: 115, Max zones: 9, Tick: 0.27s",
+	"Damage: 145, Radius: 155, Cooldown: 1.2s, Tick: 0.25s",
+	"Max: 180 dmg, 200 radius, 0.8s CD, 0.22s tick, 11 zones",
 ]
 
 func _on_setup() -> void:
@@ -25,18 +25,20 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			damage_per_tick = 60.5
-			max_zones = 7
-		3:
-			zone_radius = 150.0
-			drop_cooldown = 1.2
-			damage_per_tick = 82.5
-		4:
-			damage_per_tick = 110.0
-			zone_radius = 190.0
-			drop_cooldown = 0.8
-			tick_interval = 0.25
+			damage_per_tick = 115.0
 			max_zones = 9
+			tick_interval = 0.27
+		3:
+			damage_per_tick = 145.0
+			zone_radius = 155.0
+			drop_cooldown = 1.2
+			tick_interval = 0.25
+		4:
+			damage_per_tick = 180.0
+			zone_radius = 200.0
+			drop_cooldown = 0.8
+			tick_interval = 0.22
+			max_zones = 11
 
 func get_next_upgrade_description() -> String:
 	if is_maxed():

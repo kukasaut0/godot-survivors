@@ -1,21 +1,21 @@
 extends WeaponBase
 class_name AuraWeapon
 
-var damage: float = 5.0
+var damage: float = 8.4
 var radius: float = 120.0
 var tick_interval: float = 0.5
 var knockback_force: float = 0.0
 var _tick_timer: float = 0.0
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Aura damages nearby enemies (dmg 5, radius 120, tick 0.5s)",
-	"Range: Radius 160",
-	"Power: Damage 8",
-	"Knockback: Push enemies outward",
-	"Range: Radius 200",
-	"Power: Damage 12",
-	"Speed: Tick 0.25s",
-	"Max Power: Radius 260, Damage 16",
+	"Aura damages nearby enemies (dmg 8, radius 120, tick 0.5s)",
+	"Damage 13, Radius 150",
+	"Damage 18, Tick 0.40s",
+	"Damage 24, Knockback",
+	"Damage 30, Radius 190",
+	"Damage 38, Tick 0.35s",
+	"Damage 46",
+	"Max Power: Damage 56, Radius 250, Tick 0.28s",
 ]
 
 func _on_setup() -> void:
@@ -25,20 +25,26 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			radius = 160.0
+			damage = 13.0
+			radius = 150.0
 		3:
-			damage = 8.0
+			damage = 18.0
+			tick_interval = 0.40
 		4:
+			damage = 24.0
 			knockback_force = 140.0
 		5:
-			radius = 200.0
+			damage = 30.0
+			radius = 190.0
 		6:
-			damage = 12.0
+			damage = 38.0
+			tick_interval = 0.35
 		7:
-			tick_interval = 0.25
+			damage = 46.0
 		8:
-			radius = 260.0
-			damage = 16.0
+			damage = 56.0
+			radius = 250.0
+			tick_interval = 0.28
 	queue_redraw()
 
 func get_next_upgrade_description() -> String:

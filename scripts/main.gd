@@ -50,7 +50,7 @@ const COMBO_WINDOW: float = 2.0
 # Surge system
 var _surge_times: Array[float] = []
 var _surge_active: float = 0.0
-const SURGE_DURATION: float = 10.0
+const SURGE_DURATION: float = 14.0
 const SURGE_INTERVAL: float = 180.0
 
 # Health drop chance (modified by meta upgrades)
@@ -170,7 +170,8 @@ func _process(delta: float) -> void:
 	for i in range(_surge_times.size() - 1, -1, -1):
 		if time_elapsed >= _surge_times[i]:
 			_surge_times.remove_at(i)
-			_surge_active = SURGE_DURATION
+			var surge_scale := 1.0 + (time_elapsed / 600.0) * 0.4
+			_surge_active = SURGE_DURATION * surge_scale
 			hud.show_surge_warning()
 
 	if _surge_active > 0.0:
@@ -186,13 +187,13 @@ func _process(delta: float) -> void:
 	# Non-linear spawn scaling
 	var spawn_interval := _compute_spawn_interval()
 	if _surge_active > 0.0:
-		spawn_interval /= 1.36
+		spawn_interval /= 2.0
 
 	spawn_timer -= delta
 	if spawn_timer <= 0.0:
 		var count := mini(level_data.spawn_count_base + int(time_elapsed / 30.0) * level_data.spawn_count_per_30s, level_data.max_spawn_count)
 		if _surge_active > 0.0:
-			count = mini(int(count * 1.6), level_data.max_spawn_count * 2)
+			count = mini(int(count * 2.5), level_data.max_spawn_count * 3)
 		for i in count:
 			if enemies_container.get_child_count() < max_enemies:
 				_spawn_enemy()
@@ -256,6 +257,7 @@ func _spawn_boss() -> void:
 	enemy.setup(player)
 	enemy.apply_enemy_data(_boss_data, time_elapsed)
 	enemy.is_boss = true
+	enemy.z_index = 10
 	enemy.knockback_immune = true
 	var immune_ids := _WEAPON_DISPLAY_NAMES.keys()
 	var immune_id: String = immune_ids[randi() % immune_ids.size()]

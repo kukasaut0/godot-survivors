@@ -1,17 +1,17 @@
 extends WeaponBase
 class_name CycloneBlades
 
-var damage: float = 44.0
+var damage: float = 35.0
 var knife_count: int = 20
-var fire_interval: float = 0.5
+var fire_interval: float = 0.55
 var _timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"EVOLUTION: Continuous knife cyclone (20 knives, 40 dmg, 0.5s)",
-	"Count: 24 knives, Damage: 55",
-	"Count: 28 knives, Interval: 0.35s",
-	"Max: 32 knives, 80 dmg, 0.2s",
+	"EVOLUTION: Continuous knife cyclone (20 knives, 35 dmg, 0.55s)",
+	"Count: 22 knives, Damage: 46, Interval: 0.50s",
+	"Count: 26 knives, Damage: 58, Interval: 0.40s",
+	"Max: 30 knives, 72 dmg, 0.32s",
 ]
 
 func _on_setup() -> void:
@@ -23,15 +23,17 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			knife_count = 24
-			damage = 60.5
+			knife_count = 22
+			damage = 46.0
+			fire_interval = 0.50
 		3:
-			knife_count = 28
-			fire_interval = 0.35
+			knife_count = 26
+			damage = 58.0
+			fire_interval = 0.40
 		4:
-			knife_count = 32
-			damage = 88.0
-			fire_interval = 0.2
+			knife_count = 30
+			damage = 72.0
+			fire_interval = 0.32
 
 func get_next_upgrade_description() -> String:
 	if is_maxed():

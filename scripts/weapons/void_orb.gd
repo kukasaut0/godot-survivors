@@ -1,22 +1,22 @@
 extends WeaponBase
 class_name VoidOrb
 
-var bolt_damage: float = 36.0
-var bolt_count: int = 5
-var bolt_cooldown: float = 0.4
-var aura_damage: float = 28.0
-var aura_radius: float = 240.0
-var aura_tick: float = 0.4
+var bolt_damage: float = 100.0
+var bolt_count: int = 6
+var bolt_cooldown: float = 0.35
+var aura_damage: float = 60.0
+var aura_radius: float = 280.0
+var aura_tick: float = 0.30
 
 var _bolt_timer: float = 0.0
 var _aura_timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"EVOLUTION: 5 bolts + void aura (36 dmg, 28 aura, 240 radius)",
-	"Power: Bolt dmg 50, Aura dmg 40",
-	"Range: Aura radius 300, Bolt count 7",
-	"Max Power: Bolt dmg 70, Aura dmg 55, tick 0.3s",
+	"EVOLUTION: 6 bolts + void aura (100 bolt dmg, 60 aura dmg, 280 radius, 0.30s tick)",
+	"Bolt dmg 130, Aura dmg 80, Count: 7",
+	"Bolt dmg 160, Aura dmg 100, Radius: 350, Count: 8",
+	"Max: Bolt dmg 200, Aura dmg 130, Radius 420, tick 0.25s, Count: 9",
 ]
 
 func _on_setup() -> void:
@@ -28,15 +28,20 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			bolt_damage = 50.0
-			aura_damage = 40.0
-		3:
-			aura_radius = 300.0
+			bolt_damage = 130.0
+			aura_damage = 80.0
 			bolt_count = 7
+		3:
+			bolt_damage = 160.0
+			aura_damage = 100.0
+			aura_radius = 350.0
+			bolt_count = 8
 		4:
-			bolt_damage = 70.0
-			aura_damage = 55.0
-			aura_tick = 0.3
+			bolt_damage = 200.0
+			aura_damage = 130.0
+			aura_radius = 420.0
+			aura_tick = 0.25
+			bolt_count = 9
 	queue_redraw()
 
 func get_next_upgrade_description() -> String:

@@ -1,7 +1,7 @@
 extends WeaponBase
 class_name Boomerang
 
-var damage: float = 24.0
+var damage: float = 90.0
 var orbit_radius: float = 100.0
 var orbit_speed: float = 3.5
 var blade_count: int = 1
@@ -13,14 +13,14 @@ const HIT_COOLDOWN: float = 0.25
 const HIT_RADIUS_SQ: float = 1600.0  # 40px
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Orbiting blade with knockback (1 blade, 24 dmg, 100 radius)",
+	"Orbiting blade with knockback (1 blade, 90 dmg, 100 radius)",
 	"Blades: 2",
-	"Damage: 36, Radius: 120",
-	"Speed: 4 rad/s",
-	"Blades: 3, Damage: 48, Knockback +50",
-	"Radius: 150",
-	"Blades: 4, Speed: 4.5 rad/s",
-	"Max: 5 blades, 72 dmg, 180 radius, 5 rad/s",
+	"Damage: 110, Radius: 130",
+	"Speed: 4.5 rad/s",
+	"Blades: 3, Damage: 145, Speed: 5.5 rad/s",
+	"Damage: 180, Radius: 160, Speed: 6.0 rad/s",
+	"Blades: 4, Damage: 210, Speed: 6.5 rad/s",
+	"Max: 5 blades, 250 dmg, 190 radius, 7.0 rad/s",
 ]
 
 func _on_setup() -> void:
@@ -32,24 +32,28 @@ func _on_upgrade() -> void:
 		2:
 			blade_count = 2
 		3:
-			damage = 36.0
-			orbit_radius = 120.0
+			damage = 110.0
+			orbit_radius = 130.0
 		4:
-			orbit_speed = 4.0
+			orbit_speed = 4.5
 		5:
 			blade_count = 3
-			damage = 48.0
-			knockback_force = 200.0
+			damage = 145.0
+			orbit_speed = 5.5
+			knockback_force = 250.0
 		6:
-			orbit_radius = 150.0
+			damage = 180.0
+			orbit_radius = 160.0
+			orbit_speed = 6.0
 		7:
 			blade_count = 4
-			orbit_speed = 4.5
+			damage = 210.0
+			orbit_speed = 6.5
 		8:
 			blade_count = 5
-			damage = 72.0
-			orbit_radius = 180.0
-			orbit_speed = 5.0
+			damage = 250.0
+			orbit_radius = 190.0
+			orbit_speed = 7.0
 	queue_redraw()
 
 func get_next_upgrade_description() -> String:

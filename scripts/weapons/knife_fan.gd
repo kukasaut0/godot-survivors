@@ -1,21 +1,21 @@
 extends WeaponBase
 class_name KnifeFan
 
-var damage: float = 17.6
+var damage: float = 25.0
 var projectile_count: int = 4
 var fire_interval: float = 2.0
 var _timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Fires 4 knives in all directions (dmg 18, 2.0s)",
-	"Damage: 24",
-	"Count: 8 knives",
+	"Fires 4 knives in all directions (dmg 25, 2.0s)",
+	"Damage 30, Count: 6 knives",
+	"Damage 36, Count: 8 knives",
 	"Interval: 1.6s",
-	"Damage: 31",
-	"Count: 12 knives",
-	"Interval: 1.2s",
-	"Max: 16 knives, dmg 44",
+	"Damage 44, Count: 10 knives",
+	"Count: 12, Interval: 1.3s",
+	"Damage 52",
+	"Max: 16 knives, Interval: 1.1s",
 ]
 
 func _on_setup() -> void:
@@ -26,20 +26,24 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			damage = 24.2
+			damage = 30.0
+			projectile_count = 6
 		3:
+			damage = 36.0
 			projectile_count = 8
 		4:
 			fire_interval = 1.6
 		5:
-			damage = 30.8
+			damage = 44.0
+			projectile_count = 10
 		6:
 			projectile_count = 12
+			fire_interval = 1.3
 		7:
-			fire_interval = 1.2
+			damage = 52.0
 		8:
 			projectile_count = 16
-			damage = 44.0
+			fire_interval = 1.1
 
 func get_next_upgrade_description() -> String:
 	if is_maxed():

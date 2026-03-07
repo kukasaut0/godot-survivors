@@ -1,22 +1,22 @@
 extends WeaponBase
 class_name ProjectileWeapon
 
-var damage: float = 28.08
-var shoot_cooldown: float = 0.504
+var damage: float = 25.0
+var shoot_cooldown: float = 1.008
 var projectile_count: int = 1
 var projectile_range: float = 300.0
 var _shoot_timer: float = 0.0
 var _projectile_scene: PackedScene = null
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"Base shot (damage 28, cooldown 0.50s)",
-	"Faster: Cooldown ×0.8",
+	"Base shot (damage 25, cooldown 0.50s)",
+	"Faster: Cooldown ×0.82",
 	"Spread: 2 bolts",
-	"Power: Damage ×1.3",
-	"Faster: Cooldown ×0.75",
+	"Power: Damage ×1.24",
+	"Faster: Cooldown ×0.78",
 	"Spread: 3 bolts",
-	"Power: Damage ×1.4",
-	"Max Power: Cooldown ×0.7, 4 bolts",
+	"Power: Damage ×1.29",
+	"Max Power: Cooldown ×0.72, 4 bolts",
 ]
 
 func _on_setup() -> void:
@@ -27,25 +27,25 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			shoot_cooldown *= 0.8
+			shoot_cooldown *= 0.82
 			projectile_range = 360.0
 		3:
 			projectile_count = 2
 			projectile_range = 420.0
 		4:
-			damage *= 1.3
+			damage *= 1.24
 			projectile_range = 500.0
 		5:
-			shoot_cooldown *= 0.75
+			shoot_cooldown *= 0.78
 			projectile_range = 580.0
 		6:
 			projectile_count = 3
 			projectile_range = 660.0
 		7:
-			damage *= 1.4
+			damage *= 1.29
 			projectile_range = 750.0
 		8:
-			shoot_cooldown *= 0.7
+			shoot_cooldown *= 0.72
 			projectile_count = 4
 			projectile_range = 850.0
 

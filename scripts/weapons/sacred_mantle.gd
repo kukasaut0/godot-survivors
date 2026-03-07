@@ -1,17 +1,17 @@
 extends WeaponBase
 class_name SacredMantle
 
-var damage: float = 30.0
-var radius: float = 350.0
-var tick_interval: float = 0.4
-var heal_per_tick: float = 8.0
+var damage: float = 75.0
+var radius: float = 380.0
+var tick_interval: float = 0.35
+var heal_per_tick: float = 7.0
 var _tick_timer: float = 0.0
 
 const UPGRADE_DESCRIPTIONS: Array[String] = [
-	"EVOLUTION: Healing aura damages enemies and restores HP (350 radius, 30 dmg, +8 HP/tick)",
-	"Radius: 420, Damage: 42, Heal: 12/tick",
-	"Radius: 500, Damage: 56, Heal: 18/tick",
-	"Max: 600 radius, 75 dmg, heal 28/tick, 0.3s tick",
+	"EVOLUTION: Healing aura damages enemies and restores HP (380 radius, 75 dmg, +7 HP/tick, 0.35s)",
+	"Radius: 440, Damage: 100, Heal: 12/tick, Tick: 0.32s",
+	"Radius: 520, Damage: 130, Heal: 18/tick, Tick: 0.28s",
+	"Max: 620 radius, 170 dmg, heal 28/tick, 0.24s tick",
 ]
 
 func _on_setup() -> void:
@@ -22,18 +22,20 @@ func _on_setup() -> void:
 func _on_upgrade() -> void:
 	match level:
 		2:
-			radius = 420.0
-			damage = 42.0
+			radius = 440.0
+			damage = 100.0
 			heal_per_tick = 12.0
+			tick_interval = 0.32
 		3:
-			radius = 500.0
-			damage = 56.0
+			radius = 520.0
+			damage = 130.0
 			heal_per_tick = 18.0
+			tick_interval = 0.28
 		4:
-			radius = 600.0
-			damage = 75.0
+			radius = 620.0
+			damage = 170.0
 			heal_per_tick = 28.0
-			tick_interval = 0.3
+			tick_interval = 0.24
 	queue_redraw()
 
 func get_next_upgrade_description() -> String:

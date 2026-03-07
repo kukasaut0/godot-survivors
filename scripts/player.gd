@@ -3,14 +3,14 @@ extends CharacterBody2D
 signal died
 signal level_up(current_level: int)
 
-var speed: float = 300.0
+var speed: float = 240.0
 
 var max_health: float = 100.0
 var health: float = 100.0
 var _health_per_level: float = 20.0
 var level: int = 1
 var xp: int = 0
-var xp_to_next: int = 240
+var xp_to_next: int = 160
 
 var projectiles_container: Node = null
 var weapons: Array[WeaponBase] = []
@@ -93,7 +93,7 @@ func collect_xp(amount: int) -> void:
 
 func _level_up() -> void:
 	level += 1
-	xp_to_next = int(240.0 * pow(1.15, level - 1))
+	xp_to_next = int(160.0 * pow(1.15, level - 1))
 	max_health += _health_per_level
 	health = minf(health + _health_per_level, max_health)
 	level_up.emit(level)
